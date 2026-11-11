@@ -153,3 +153,136 @@
     color: var(--color-foreground);
   }
 }
+
+/* site-import tokens: begin (generated; re-import replaces this block) */
+/* Imported clone roles use prefixed Tailwind utilities
+   (bg-site-import-primary, text-site-import-foreground, …); edit the
+   --site-import-* variables to restyle the clone. Unprefixed roles theme new UI. */
+:root {
+  --background: oklch(1 0 0);
+  --site-import-background: oklch(1 0 0);
+  --foreground: oklch(0 0 0);
+  --site-import-foreground: oklch(0 0 0);
+  --primary: oklch(0.85086 0.0346 86.31);
+  --site-import-primary: oklch(0.85086 0.0346 86.31);
+  --primary-foreground: oklch(0.145 0 0);
+  --site-import-primary-foreground: oklch(0.145 0 0);
+  --accent: oklch(0.30313 0.03869 179.29);
+  --site-import-accent: oklch(0.30313 0.03869 179.29);
+  --border: oklch(0.97651 0.00542 274.97);
+  --site-import-border: oklch(0.97651 0.00542 274.97);
+  --muted-foreground: oklch(0.68243 0.00187 247.85);
+  --site-import-muted-foreground: oklch(0.68243 0.00187 247.85);
+  --card: oklch(0.9851 0 0);
+  --site-import-card: oklch(0.9851 0 0);
+  --muted: oklch(0.91317 0.01675 162.72);
+  --site-import-muted: oklch(0.91317 0.01675 162.72);
+}
+/* Design tokens captured from the imported site, registered as Tailwind
+   utilities (bg-<name>, text-<name>, font-<name>). var() values live in
+   the imported stylesheet's :root. */
+@theme inline {
+  --font-sans: Mukta, sans-serif;
+  --font-heading: "Playfair Display";
+  --color-site-import-background: var(--site-import-background);
+  --color-site-import-foreground: var(--site-import-foreground);
+  --color-site-import-primary: var(--site-import-primary);
+  --color-site-import-primary-foreground: var(--site-import-primary-foreground);
+  --color-site-import-accent: var(--site-import-accent);
+  --color-site-import-border: var(--site-import-border);
+  --color-site-import-muted-foreground: var(--site-import-muted-foreground);
+  --color-site-import-card: var(--site-import-card);
+  --color-site-import-muted: var(--site-import-muted);
+  --color-branding--color-link: var(--branding--color-link);
+  --color-branding--color-link-hover: var(--branding--color-link-hover);
+  --color-branding--color-text: var(--branding--color-text);
+  --font-branding--description--font-family: var(--branding--description--font-family);
+  --font-branding--title--font-family: var(--branding--title--font-family);
+  --color-button--color-background: var(--button--color-background);
+  --color-button--color-background-active: var(--button--color-background-active);
+  --color-button--color-text: var(--button--color-text);
+  --color-button--color-text-active: var(--button--color-text-active);
+  --color-button--color-text-hover: var(--button--color-text-hover);
+  --font-button--font-family: var(--button--font-family);
+  --color-cover--color-background: var(--cover--color-background);
+  --color-cover--color-foreground: var(--cover--color-foreground);
+  --font-definition-term--font-family: var(--definition-term--font-family);
+  --font-entry-author-bio--font-family: var(--entry-author-bio--font-family);
+  --font-entry-content--font-family: var(--entry-content--font-family);
+  --color-entry-header--color: var(--entry-header--color);
+  --color-entry-header--color-focus: var(--entry-header--color-focus);
+  --color-entry-header--color-hover: var(--entry-header--color-hover);
+  --color-entry-header--color-link: var(--entry-header--color-link);
+  --color-footer--color-link: var(--footer--color-link);
+  --color-footer--color-link-hover: var(--footer--color-link-hover);
+  --color-footer--color-text: var(--footer--color-text);
+  --font-footer--font-family: var(--footer--font-family);
+  --color-form--border-color: var(--form--border-color);
+  --color-form--color-ranged: var(--form--color-ranged);
+  --color-form--color-text: var(--form--color-text);
+  --font-form--font-family: var(--form--font-family);
+  --color-global--color-background: var(--global--color-background);
+  --color-global--color-black: var(--global--color-black);
+  --color-global--color-blue: var(--global--color-blue);
+  --color-global--color-border: var(--global--color-border);
+  --color-global--color-dark-gray: var(--global--color-dark-gray);
+  --color-global--color-gray: var(--global--color-gray);
+  --color-global--color-green: var(--global--color-green);
+  --color-global--color-light-gray: var(--global--color-light-gray);
+  --color-global--color-orange: var(--global--color-orange);
+  --color-global--color-primary: var(--global--color-primary);
+  --color-global--color-primary-hover: var(--global--color-primary-hover);
+  --color-global--color-purple: var(--global--color-purple);
+  --color-global--color-red: var(--global--color-red);
+  --color-global--color-secondary: var(--global--color-secondary);
+  --color-global--color-white: var(--global--color-white);
+  --color-global--color-white-50: var(--global--color-white-50);
+  --color-global--color-white-90: var(--global--color-white-90);
+  --color-global--color-yellow: var(--global--color-yellow);
+  --font-global--font-primary: var(--global--font-primary);
+  --font-global--font-secondary: var(--global--font-secondary);
+  --font-heading--font-family: var(--heading--font-family);
+  --font-latest-posts--description-font-family: var(--latest-posts--description-font-family);
+  --font-latest-posts--title-font-family: var(--latest-posts--title-font-family);
+  --font-list--font-family: var(--list--font-family);
+  --color-pagination--color-link-hover: var(--pagination--color-link-hover);
+  --color-pagination--color-text: var(--pagination--color-text);
+  --font-pagination--font-family: var(--pagination--font-family);
+  --color-primary-nav--border-color: var(--primary-nav--border-color);
+  --color-primary-nav--color-link: var(--primary-nav--color-link);
+  --color-primary-nav--color-link-hover: var(--primary-nav--color-link-hover);
+  --color-primary-nav--color-text: var(--primary-nav--color-text);
+  --font-primary-nav--font-family: var(--primary-nav--font-family);
+  --font-primary-nav--font-family-mobile: var(--primary-nav--font-family-mobile);
+  --color-pullquote--border-color: var(--pullquote--border-color);
+  --color-pullquote--color-background: var(--pullquote--color-background);
+  --color-pullquote--color-foreground: var(--pullquote--color-foreground);
+  --font-pullquote--font-family: var(--pullquote--font-family);
+  --font-quote--font-family: var(--quote--font-family);
+  --color-separator--border-color: var(--separator--border-color);
+  --color-swiper-theme-color: var(--swiper-theme-color);
+  --color-table--has-background-text-color: var(--table--has-background-text-color);
+  --color-table--stripes-background-color: var(--table--stripes-background-color);
+  --color-table--stripes-border-color: var(--table--stripes-border-color);
+  --color-wp--preset--color--black: var(--wp--preset--color--black);
+  --color-wp--preset--color--blue: var(--wp--preset--color--blue);
+  --color-wp--preset--color--cyan-bluish-gray: var(--wp--preset--color--cyan-bluish-gray);
+  --color-wp--preset--color--dark-gray: var(--wp--preset--color--dark-gray);
+  --color-wp--preset--color--gray: var(--wp--preset--color--gray);
+  --color-wp--preset--color--green: var(--wp--preset--color--green);
+  --color-wp--preset--color--light-green-cyan: var(--wp--preset--color--light-green-cyan);
+  --color-wp--preset--color--luminous-vivid-amber: var(--wp--preset--color--luminous-vivid-amber);
+  --color-wp--preset--color--luminous-vivid-orange: var(--wp--preset--color--luminous-vivid-orange);
+  --color-wp--preset--color--orange: var(--wp--preset--color--orange);
+  --color-wp--preset--color--pale-cyan-blue: var(--wp--preset--color--pale-cyan-blue);
+  --color-wp--preset--color--pale-pink: var(--wp--preset--color--pale-pink);
+  --color-wp--preset--color--purple: var(--wp--preset--color--purple);
+  --color-wp--preset--color--red: var(--wp--preset--color--red);
+  --color-wp--preset--color--vivid-cyan-blue: var(--wp--preset--color--vivid-cyan-blue);
+  --color-wp--preset--color--vivid-green-cyan: var(--wp--preset--color--vivid-green-cyan);
+  --color-wp--preset--color--vivid-purple: var(--wp--preset--color--vivid-purple);
+  --color-wp--preset--color--vivid-red: var(--wp--preset--color--vivid-red);
+  --color-wp--preset--color--white: var(--wp--preset--color--white);
+  --color-wp--preset--color--yellow: var(--wp--preset--color--yellow);
+}
+/* site-import tokens: end */
