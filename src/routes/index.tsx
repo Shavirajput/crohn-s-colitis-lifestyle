@@ -27,6 +27,15 @@ function Index() {
     setSlidePosition0(current => { const index = Math.max(0, Math.min(Math.ceil(maximum / step), (current?.index ?? initial) + direction)); return { index, offset: Math.min(maximum, index * step), maximum }; });
   };
   useEffect(() => { moveslideTrack0(0); const resize = () => moveslideTrack0(0); window.addEventListener("resize", resize); return () => window.removeEventListener("resize", resize); }, []);
+  // Floating intro video: "bubble" (GIF teaser), "video" (playing with sound), "hidden" (minimised).
+  const [introVideo, setIntroVideo] = useState<"bubble" | "video" | "hidden">("bubble");
+  const introVideoEl = useRef<HTMLVideoElement | null>(null);
+  const openIntroVideo = () => {
+    setIntroVideo("video");
+    const video = introVideoEl.current;
+    if (video) { video.muted = false; video.currentTime = 0; void video.play().catch(() => {}); }
+  };
+  const closeIntroVideo = () => { introVideoEl.current?.pause(); setIntroVideo("bubble"); };
   useImportedLayout();
   return (
     <>
@@ -104,35 +113,35 @@ function Index() {
                   </div>
                 </div>
               </div>
-              <div className="elementor-element elementor-element-309cc74 elementor-view-stacked elementor-widget__width-auto elementor-fixed elementor-shape-square animated-slow elementor-widget elementor-widget-icon animated fadeIn bottom-[186px] [width:auto]">
+              <div className="elementor-element elementor-element-309cc74 elementor-view-stacked elementor-widget__width-auto elementor-fixed elementor-shape-square animated-slow elementor-widget elementor-widget-icon animated fadeIn bottom-[186px] [width:auto]" style={introVideo === "bubble" ? undefined : { display: "none" }}>
                 <div className="elementor-widget-container">
                   <div className="elementor-icon-wrapper">
-                    <a className="elementor-icon [fill:rgb(255,255,255)]" href="#">
+                    <a className="elementor-icon [fill:rgb(255,255,255)]" href="#" role="button" aria-label="Hide intro video" onClick={(event) => { event.preventDefault(); setIntroVideo("hidden"); }}>
                       <i className="fas fa-minus" aria-hidden="true" />
                     </a>
                   </div>
                 </div>
               </div>
-              <div className="elementor-element elementor-element-f5494a6 elementor-widget__width-auto elementor-fixed elementor-widget elementor-widget-image animated slideInUp bottom-[29px] [width:auto]">
+              <div className="elementor-element elementor-element-f5494a6 elementor-widget__width-auto elementor-fixed elementor-widget elementor-widget-image animated slideInUp bottom-[29px] [width:auto]" style={introVideo === "bubble" ? undefined : { display: "none" }}>
                 <div className="elementor-widget-container">
-                  <a href="#">
+                  <a href="#" role="button" aria-label="Play intro video from Dane" onClick={(event) => { event.preventDefault(); openIntroVideo(); }}>
                     <img className={"attachment-full \x73ize-full"} decoding="async" width="166" height="214" src="/site-assets/ce088d1ecca07051.gif" alt="" />
                   </a>
                 </div>
               </div>
-              <div className="elementor-element elementor-element-493a58d elementor-view-stacked elementor-widget__width-auto elementor-fixed close-icon elementor-shape-circle elementor-widget elementor-widget-icon [width:auto]">
+              <div className="elementor-element elementor-element-493a58d elementor-view-stacked elementor-widget__width-auto elementor-fixed close-icon elementor-shape-circle elementor-widget elementor-widget-icon [width:auto]" style={introVideo === "video" ? { display: "block" } : undefined}>
                 <div className="elementor-widget-container">
                   <div className="elementor-icon-wrapper">
-                    <a className="elementor-icon [fill:rgb(255,255,255)]" href="#">
+                    <a className="elementor-icon [fill:rgb(255,255,255)]" href="#" role="button" aria-label="Close intro video" onClick={(event) => { event.preventDefault(); closeIntroVideo(); }}>
                       <i className="fas fa-times" aria-hidden="true" />
                     </a>
                   </div>
                 </div>
               </div>
-              <div className="elementor-element elementor-element-36a0533 elementor-widget__width-initial elementor-fixed slide-video elementor-widget elementor-widget-video bottom-[20px]">
+              <div className="elementor-element elementor-element-36a0533 elementor-widget__width-initial elementor-fixed slide-video elementor-widget elementor-widget-video bottom-[20px]" style={introVideo === "video" ? { display: "block" } : undefined}>
                 <div className="elementor-widget-container [box-shadow:rgba(0,0,0,0.73)_0px_0px_26px_0px]">
                   <div className="elementor-wrapper elementor-open-inline [aspect-ratio:var(--video-aspect-ratio)]">
-                    <video className="elementor-video object-cover" src="https://crohnscolitislifestyle.com/wp-content/uploads/2022/12/Video-Final.mp4" loop controls preload="auto" muted {...({ controlslist: "nodownload" } as any)} />
+                    <video ref={introVideoEl} className="elementor-video object-cover" src="https://crohnscolitislifestyle.com/wp-content/uploads/2022/12/Video-Final.mp4" loop controls preload="metadata" playsInline muted {...({ controlslist: "nodownload" } as any)} />
                   </div>
                 </div>
               </div>
@@ -242,7 +251,7 @@ function Index() {
                 <div className="elementor-widget-container">
                   <div className="ep-iFrameContainer" style={{ borderRadius: "4px", display: "block" }} id="inline-1TONI4aFMHMcVQbZc9zA-div">
                     <div className="ep-wrapper [width:100%]" style={{ borderRadius: "4px" }} id="inline-1TONI4aFMHMcVQbZc9zA-wrapper">
-                      <img style={{ width: "847px", height: "auto", borderWidth: "medium", borderStyle: "none", borderColor: "currentcolor", borderImage: "none", borderRadius: "4px", opacity: "1", visibility: "visible", pointerEvents: "auto", position: "relative", overflow: "auto", display: "block", maxWidth: "100%" } as CSSProperties} id="inline-1TONI4aFMHMcVQbZc9zA" data-site-import-responsive="179" alt="[Website] 6 tips ebook" src="/site-assets/65d67962679fa5af.png" data-site-import-static-fallback="video" />
+                      <iframe src="https://api.leadconnectorhq.com/widget/form/1TONI4aFMHMcVQbZc9zA" className="h-[515px] md:h-[307px]" style={{ width: "100%", border: "none", borderRadius: "4px", display: "block" }} id="inline-1TONI4aFMHMcVQbZc9zA" data-layout="{'id':'INLINE'}" data-trigger-type="alwaysShow" data-activation-type="alwaysActivated" data-deactivation-type="neverDeactivate" data-form-name="[Website] 6 tips ebook" data-height="400" data-layout-iframe-id="inline-1TONI4aFMHMcVQbZc9zA" data-form-id="1TONI4aFMHMcVQbZc9zA" title="Download the free 6 Tips to Healing Crohn's & Colitis guide" loading="lazy" />
                     </div>
                   </div>
                 </div>
