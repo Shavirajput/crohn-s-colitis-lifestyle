@@ -3,10 +3,38 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import capturedCSS from "../styles/site.css?raw";
+import homePageCss from "../styles/homepage.css?url";
+import siteCss from "../styles/site.css?url";
 
 export const Route = createFileRoute("/")({
-  head: () => ({ meta: [{ title: "Natural Healing for Crohn’s and Ulcerative Colitis" }] }),
+  head: () => ({
+    meta: [
+      { title: "Personalized Crohn’s & Colitis Support | Crohn’s & Colitis Lifestyle" },
+      {
+        name: "description",
+        content:
+          "Explore personalized lifestyle coaching, education, and community for people living with Crohn’s disease and ulcerative colitis.",
+      },
+      { name: "author", content: "Crohn’s & Colitis Lifestyle" },
+      {
+        property: "og:title",
+        content: "Personalized Crohn’s & Colitis Support | Crohn’s & Colitis Lifestyle",
+      },
+      {
+        property: "og:description",
+        content:
+          "Explore personalized lifestyle coaching, education, and community for people living with Crohn’s disease and ulcerative colitis.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://crohnscolitislifestyle.com/" },
+      { name: "twitter:card", content: "summary" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://crohnscolitislifestyle.com/" },
+      { rel: "stylesheet", href: siteCss },
+      { rel: "stylesheet", href: homePageCss },
+    ],
+  }),
   staticData: { importedDocument: { html: { "lang": "en-US" }, body: { "className": "home page custom-background wp-custom-logo has-background-white singular elementor-kit-6", "data-elementor-device-mode": "desktop", "data-rsssl": "1" } } },
   component: Index,
 });
@@ -26,22 +54,59 @@ function Index() {
     const initial = Math.round(-(transform === "none" ? 0 : new DOMMatrixReadOnly(transform).m41) / step);
     setSlidePosition0(current => { const index = Math.max(0, Math.min(Math.ceil(maximum / step), (current?.index ?? initial) + direction)); return { index, offset: Math.min(maximum, index * step), maximum }; });
   };
+  const moveToSlide0 = (requestedIndex: number) => {
+    const track = slideTrack0.current;
+    if (!track?.parentElement) return;
+    const slides = Array.from(track.children);
+    const first = slides[0]?.getBoundingClientRect();
+    const second = slides[1]?.getBoundingClientRect();
+    const last = slides.at(-1)?.getBoundingClientRect();
+    if (!first || !second || !last) return;
+    const step = second.left - first.left;
+    if (step <= 0) return;
+    const maximum = Math.max(0, last.right - first.left - track.parentElement.clientWidth);
+    const index = Math.max(0, Math.min(slides.length - 1, requestedIndex));
+    setSlidePosition0({ index, offset: Math.min(maximum, index * step), maximum });
+  };
   useEffect(() => { moveslideTrack0(0); const resize = () => moveslideTrack0(0); window.addEventListener("resize", resize); return () => window.removeEventListener("resize", resize); }, []);
   // Floating intro video: "bubble" (GIF teaser), "video" (playing with sound), "hidden" (minimised).
   const [introVideo, setIntroVideo] = useState<"bubble" | "video" | "hidden">("bubble");
+  const [introVideoError, setIntroVideoError] = useState(false);
   const introVideoEl = useRef<HTMLVideoElement | null>(null);
   const openIntroVideo = () => {
     setIntroVideo("video");
+    setIntroVideoError(false);
     const video = introVideoEl.current;
-    if (video) { video.muted = false; video.currentTime = 0; void video.play().catch(() => {}); }
+    if (video) {
+      video.muted = false;
+      video.currentTime = 0;
+      void video.play().catch(() => setIntroVideoError(true));
+    }
   };
-  const closeIntroVideo = () => { introVideoEl.current?.pause(); setIntroVideo("bubble"); };
+  const closeIntroVideo = () => {
+    introVideoEl.current?.pause();
+    setIntroVideoError(false);
+    setIntroVideo("bubble");
+  };
   useImportedLayout();
   return (
     <>
-      <style>{capturedCSS}</style>
-    <style>{"[data-import-track-0=\"active\"]{transform:translateX(var(--import-slide-offset))!important;transition-duration:300ms!important}@media(prefers-reduced-motion:reduce){[data-import-track-0=\"active\"]{transition-duration:0ms!important}}"}</style>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Crohn’s & Colitis Lifestyle",
+            url: "https://crohnscolitislifestyle.com/",
+          }),
+        }}
+      />
+      <a className="homepage-skip-link" href="#main-content">
+        Skip to main content
+      </a>
       <ImportedHeader />
+      <main id="main-content" tabIndex={-1}>
       <div className="elementor elementor-13003" data-elementor-id="13003">
         <div className="elementor-element elementor-element-6d72d7a e-flex e-con-boxed e-con e-parent e-lazyloaded">
           <div className="e-con-inner">
@@ -75,7 +140,7 @@ function Index() {
               <div className="elementor-element elementor-element-c8c9120 elementor-align-center elementor-mobile-align-center elementor-widget elementor-widget-button [width:100%]">
                 <div className="elementor-widget-container">
                   <div className="elementor-button-wrapper">
-                    <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" target="_blank">
+                    <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" rel="noopener noreferrer" target="_blank">
                       <span className="elementor-button-content-wrapper">{"\n\t\t\t\t\t\t"}<span className="elementor-button-icon">{"\n\t\t\t\t"}<i className="fas fa-long-arrow-alt-right" aria-hidden="true" />{"\t\t\t"}</span>{"\n\t\t\t\t\t\t\t\t\t"}<span className="elementor-button-text">Book Your Free IBD Session</span>{"\n\t\t\t\t\t"}</span>
                     </a>
                   </div>
@@ -86,7 +151,7 @@ function Index() {
                   <div className="elementor-element elementor-element-aac07aa elementor-widget elementor-widget-counter">
                     <div className="elementor-widget-container">
                       <div className="elementor-counter items-stretch gap-[15px] justify-center">
-                        <div className="elementor-counter-title items-center justify-center [@media(max-width:1024px)]:justify-center [@media(max-width:767px)]:justify-center">Client served worldwide</div>
+                        <div className="elementor-counter-title items-center justify-center [@media(max-width:1024px)]:justify-center [@media(max-width:767px)]:justify-center">Clients served worldwide</div>
                         <div className="elementor-counter-number-wrapper"><span className="elementor-counter-number-prefix whitespace-pre-wrap [flex-grow:var(--counter-prefix-grow,1)]" /><span className="elementor-counter-number [flex-grow:var(--counter-number-grow,0)]">4,000</span><span className="elementor-counter-number-suffix whitespace-pre-wrap [flex-grow:var(--counter-suffix-grow,1)]">+</span></div>
                       </div>
                     </div>
@@ -116,39 +181,40 @@ function Index() {
               <div className="elementor-element elementor-element-309cc74 elementor-view-stacked elementor-widget__width-auto elementor-fixed elementor-shape-square animated-slow elementor-widget elementor-widget-icon animated fadeIn bottom-[186px] [width:auto]" style={introVideo === "bubble" ? undefined : { display: "none" }}>
                 <div className="elementor-widget-container">
                   <div className="elementor-icon-wrapper">
-                    <a className="elementor-icon [fill:rgb(255,255,255)]" href="#" role="button" aria-label="Hide intro video" onClick={(event) => { event.preventDefault(); setIntroVideo("hidden"); }}>
+                    <button className="elementor-icon [fill:rgb(255,255,255)]" type="button" aria-label="Hide intro video" onClick={() => setIntroVideo("hidden")}>
                       <i className="fas fa-minus" aria-hidden="true" />
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
               <div className="elementor-element elementor-element-f5494a6 elementor-widget__width-auto elementor-fixed elementor-widget elementor-widget-image animated slideInUp bottom-[29px] [width:auto]" style={introVideo === "bubble" ? undefined : { display: "none" }}>
                 <div className="elementor-widget-container">
-                  <a href="#" role="button" aria-label="Play intro video from Dane" onClick={(event) => { event.preventDefault(); openIntroVideo(); }}>
-                    <img className={"attachment-full \x73ize-full"} decoding="async" width="166" height="214" src="/site-assets/ce088d1ecca07051.gif" alt="" />
-                  </a>
+                  <button className="intro-video-preview" type="button" aria-label="Play intro video from Dane" onClick={openIntroVideo}>
+                    <img className={"attachment-full \x73ize-full"} loading="lazy" decoding="async" fetchPriority="low" width="166" height="214" src="/site-assets/ce088d1ecca07051.gif" alt="" />
+                  </button>
                 </div>
               </div>
               <div className="elementor-element elementor-element-493a58d elementor-view-stacked elementor-widget__width-auto elementor-fixed close-icon elementor-shape-circle elementor-widget elementor-widget-icon [width:auto]" style={introVideo === "video" ? { display: "block" } : undefined}>
                 <div className="elementor-widget-container">
                   <div className="elementor-icon-wrapper">
-                    <a className="elementor-icon [fill:rgb(255,255,255)]" href="#" role="button" aria-label="Close intro video" onClick={(event) => { event.preventDefault(); closeIntroVideo(); }}>
+                    <button className="elementor-icon [fill:rgb(255,255,255)]" type="button" aria-label="Close intro video" onClick={closeIntroVideo}>
                       <i className="fas fa-times" aria-hidden="true" />
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
               <div className="elementor-element elementor-element-36a0533 elementor-widget__width-initial elementor-fixed slide-video elementor-widget elementor-widget-video bottom-[20px]" style={introVideo === "video" ? { display: "block" } : undefined}>
                 <div className="elementor-widget-container [box-shadow:rgba(0,0,0,0.73)_0px_0px_26px_0px]">
                   <div className="elementor-wrapper elementor-open-inline [aspect-ratio:var(--video-aspect-ratio)]">
-                    <video ref={introVideoEl} className="elementor-video object-cover" src="https://crohnscolitislifestyle.com/wp-content/uploads/2022/12/Video-Final.mp4" loop controls preload="metadata" playsInline muted {...({ controlslist: "nodownload" } as any)} />
+                    <video ref={introVideoEl} className="elementor-video object-cover" src="https://crohnscolitislifestyle.com/wp-content/uploads/2022/12/Video-Final.mp4" loop controls preload="metadata" playsInline muted controlsList="nodownload" onError={() => setIntroVideoError(true)} />
+                    {introVideoError && <p className="intro-video-error" role="status">The intro video could not be played. Please try again later.</p>}
                   </div>
                 </div>
               </div>
               <div className="elementor-element elementor-element-c922c81 elementor-align-justify elementor-widget__width-auto elementor-fixed slide-btn elementor-widget elementor-widget-button [width:auto]">
                 <div className="elementor-widget-container">
                   <div className="elementor-button-wrapper">
-                    <a className="elementor-button elementor-size-xl" href="https://www.cclworkshop.com/apply?el=website" target="_blank">
+                    <a className="elementor-button elementor-size-xl" href="https://www.cclworkshop.com/apply?el=website" rel="noopener noreferrer" target="_blank">
                       <span className="elementor-button-content-wrapper">
                         <span className="elementor-button-text">Book Free Discovery Call</span>
                       </span>
@@ -185,22 +251,22 @@ function Index() {
             <div className="elementor-element elementor-element-76265b4 e-con-full e-flex e-con">
               <div className="elementor-element elementor-element-5c9424d as-seen-logos elementor-widget elementor-widget-image">
                 <div className="elementor-widget-container">
-                  <img className={"attachment-full \x73ize-full [filter:brightness(0)_invert(1)]"} loading="lazy" decoding="async" width="341" height="221" src="/site-assets/4d37aeac29b74578.png" alt="" srcSet="/site-assets/4d37aeac29b74578.png 341w, /site-assets/5b464c3bc08845dd.png 768w, /site-assets/f427866bd75aaaaf.png 600w" sizes="(max-width: 341px) 100vw, 341px" />
+                  <img className={"attachment-full \x73ize-full [filter:brightness(0)_invert(1)]"} loading="lazy" decoding="async" width="341" height="221" src="/site-assets/4d37aeac29b74578.png" alt="23andMe logo" srcSet="/site-assets/4d37aeac29b74578.png 341w, /site-assets/5b464c3bc08845dd.png 768w, /site-assets/f427866bd75aaaaf.png 600w" sizes="(max-width: 767px) 45vw, 200px" />
                 </div>
               </div>
               <div className="elementor-element elementor-element-888e024 as-seen-logos elementor-widget elementor-widget-image">
                 <div className="elementor-widget-container">
-                  <img className={"attachment-full \x73ize-full [filter:brightness(0)_invert(1)]"} loading="lazy" decoding="async" width="1085" height="283" src="/site-assets/059fe4ad32dcc64e.png" alt="" srcSet="/site-assets/059fe4ad32dcc64e.png 1085w, /site-assets/dbd020bc480d3f18.png 300w, /site-assets/a479848028b117c1.png 1024w, /site-assets/abd7b2fb819fa802.png 768w" sizes="(max-width: 1085px) 100vw, 1085px" />
+                  <img className={"attachment-full \x73ize-full [filter:brightness(0)_invert(1)]"} loading="lazy" decoding="async" width="1085" height="283" src="/site-assets/059fe4ad32dcc64e.png" alt="What Doctors Don’t Tell You logo" srcSet="/site-assets/059fe4ad32dcc64e.png 1085w, /site-assets/dbd020bc480d3f18.png 300w, /site-assets/a479848028b117c1.png 1024w, /site-assets/abd7b2fb819fa802.png 768w" sizes="(max-width: 767px) 45vw, 200px" />
                 </div>
               </div>
               <div className="elementor-element elementor-element-b0d639c as-seen-logos elementor-widget elementor-widget-image">
                 <div className="elementor-widget-container">
-                  <img className={"attachment-full \x73ize-full [filter:brightness(0)_invert(1)]"} loading="lazy" decoding="async" width="2048" height="795" src="/site-assets/14883ea8e07c6f2c.webp" alt="" srcSet="/site-assets/14883ea8e07c6f2c.webp 2048w, /site-assets/e3f298d5dd71a159.webp 300w, /site-assets/bb7cebd11f522e91.webp 1024w, /site-assets/d708a8ee8c0f57ec.webp 768w, /site-assets/d1ce9d6135332a77.webp 1536w, /site-assets/ad67fb0608523ba1.webp 1568w" sizes="(max-width: 2048px) 100vw, 2048px" />
+                  <img className={"attachment-full \x73ize-full [filter:brightness(0)_invert(1)]"} loading="lazy" decoding="async" width="2048" height="795" src="/site-assets/14883ea8e07c6f2c.webp" alt="The Huffington Post logo" srcSet="/site-assets/14883ea8e07c6f2c.webp 2048w, /site-assets/e3f298d5dd71a159.webp 300w, /site-assets/bb7cebd11f522e91.webp 1024w, /site-assets/d708a8ee8c0f57ec.webp 768w, /site-assets/d1ce9d6135332a77.webp 1536w, /site-assets/ad67fb0608523ba1.webp 1568w" sizes="(max-width: 767px) 45vw, 200px" />
                 </div>
               </div>
               <div className="elementor-element elementor-element-86f12f0 as-seen-logos elementor-widget elementor-widget-image">
                 <div className="elementor-widget-container">
-                  <img className={"attachment-full \x73ize-full [filter:brightness(0)_invert(1)]"} loading="lazy" decoding="async" width="540" height="140" src="/site-assets/a00a728154554146.webp" alt="" srcSet="/site-assets/a00a728154554146.webp 540w, /site-assets/72328fe12d0cd73a.webp 300w" sizes="(max-width: 540px) 100vw, 540px" />
+                  <img className={"attachment-full \x73ize-full [filter:brightness(0)_invert(1)]"} loading="lazy" decoding="async" width="540" height="140" src="/site-assets/a00a728154554146.webp" alt="Ben Greenfield Life logo" srcSet="/site-assets/a00a728154554146.webp 540w, /site-assets/72328fe12d0cd73a.webp 300w" sizes="(max-width: 767px) 45vw, 200px" />
                 </div>
               </div>
             </div>
@@ -213,7 +279,7 @@ function Index() {
                 <div className="elementor-widget-container">
                   <picture className={"attachment-full \x73ize-full"} {...({ loading: "lazy", decoding: "async" } as any)}>
                     <source type="image/webp" srcSet="/site-assets/8482cbdbee36ac31.webp 600w, /site-assets/a5b27a904f66f713.webp 300w" sizes="(max-width: 600px) 100vw, 600px" />
-                    <img loading="lazy" decoding="async" width="600" height="509" src="/site-assets/e86ad51ab8cfd4ee.png" alt="" srcSet="/site-assets/e86ad51ab8cfd4ee.png 600w, /site-assets/9009462525b1ad18.png 300w" sizes="(max-width: 600px) 100vw, 600px" />
+                    <img loading="lazy" decoding="async" width="600" height="509" src="/site-assets/e86ad51ab8cfd4ee.png" alt="Free 6 Tips to Healing Crohn’s & Colitis guide shown on a tablet, phone, and book cover" srcSet="/site-assets/e86ad51ab8cfd4ee.png 600w, /site-assets/9009462525b1ad18.png 300w" sizes="(max-width: 600px) 100vw, 600px" />
                   </picture>
                 </div>
               </div>
@@ -251,7 +317,7 @@ function Index() {
                 <div className="elementor-widget-container">
                   <div className="ep-iFrameContainer" style={{ borderRadius: "4px", display: "block" }} id="inline-1TONI4aFMHMcVQbZc9zA-div">
                     <div className="ep-wrapper [width:100%]" style={{ borderRadius: "4px" }} id="inline-1TONI4aFMHMcVQbZc9zA-wrapper">
-                      <iframe src="https://api.leadconnectorhq.com/widget/form/1TONI4aFMHMcVQbZc9zA" className="h-[515px] md:h-[307px]" style={{ width: "100%", border: "none", borderRadius: "4px", display: "block" }} id="inline-1TONI4aFMHMcVQbZc9zA" data-layout="{'id':'INLINE'}" data-trigger-type="alwaysShow" data-activation-type="alwaysActivated" data-deactivation-type="neverDeactivate" data-form-name="[Website] 6 tips ebook" data-height="400" data-layout-iframe-id="inline-1TONI4aFMHMcVQbZc9zA" data-form-id="1TONI4aFMHMcVQbZc9zA" title="Download the free 6 Tips to Healing Crohn's & Colitis guide" loading="lazy" />
+                      <iframe src="https://api.leadconnectorhq.com/widget/form/1TONI4aFMHMcVQbZc9zA" className="h-[515px] lg:h-[307px]" style={{ width: "100%", border: "none", borderRadius: "4px", display: "block" }} id="inline-1TONI4aFMHMcVQbZc9zA" data-layout="{'id':'INLINE'}" data-trigger-type="alwaysShow" data-activation-type="alwaysActivated" data-deactivation-type="neverDeactivate" data-form-name="[Website] 6 tips ebook" data-height="400" data-layout-iframe-id="inline-1TONI4aFMHMcVQbZc9zA" data-form-id="1TONI4aFMHMcVQbZc9zA" title="Download the free 6 Tips to Healing Crohn's & Colitis guide" loading="lazy" />
                     </div>
                   </div>
                 </div>
@@ -297,7 +363,7 @@ function Index() {
               <div className="elementor-element elementor-element-2c6f4cb elementor-align-left elementor-mobile-align-center elementor-tablet-align-center elementor-widget elementor-widget-button [width:100%]">
                 <div className="elementor-widget-container">
                   <div className="elementor-button-wrapper">
-                    <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" target="_blank">
+                    <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" rel="noopener noreferrer" target="_blank">
                       <span className="elementor-button-content-wrapper">{"\n\t\t\t\t\t\t"}<span className="elementor-button-icon">{"\n\t\t\t\t"}<i className="fas fa-long-arrow-alt-right" aria-hidden="true" />{"\t\t\t"}</span>{"\n\t\t\t\t\t\t\t\t\t"}<span className="elementor-button-text">Book Your Free IBD Session</span>{"\n\t\t\t\t\t"}</span>
                     </a>
                   </div>
@@ -309,14 +375,14 @@ function Index() {
                 <div className="elementor-element elementor-element-e726659 elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
                     <picture className={"attachment-large \x73ize-large wp-image-8588"} {...({ loading: "lazy", decoding: "async" } as any)}>
-                      <source type="image/webp" srcSet="/site-assets/5e376aa8d77004a1.webp 300w, /site-assets/edf8598edba49b73.webp 150w" sizes="(max-width: 300px) 100vw, 300px" />
-                      <img loading="lazy" decoding="async" width="300" height="300" src="/site-assets/cfb1dba7fec9df4d.jpg" alt="" srcSet="/site-assets/cfb1dba7fec9df4d.jpg 300w, /site-assets/2ba0ab84ea3ab586.jpg 150w" sizes="(max-width: 300px) 100vw, 300px" />
+                      <source type="image/webp" srcSet="/site-assets/5e376aa8d77004a1.webp 300w, /site-assets/edf8598edba49b73.webp 150w" sizes="(max-width: 767px) 125px, 145px" />
+                      <img loading="lazy" decoding="async" width="300" height="300" src="/site-assets/cfb1dba7fec9df4d.jpg" alt="Dane Johnson, CHN, founder of Crohn’s & Colitis Lifestyle" srcSet="/site-assets/cfb1dba7fec9df4d.jpg 300w, /site-assets/2ba0ab84ea3ab586.jpg 150w" sizes="(max-width: 767px) 125px, 145px" />
                     </picture>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-9b2cc4a elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Dane Johnson, CHN</h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Dane Johnson, CHN</h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-8116f6b elementor-widget elementor-widget-heading">
@@ -328,12 +394,12 @@ function Index() {
               <div className="elementor-element elementor-element-eb8f1ab e-con-full e-flex e-con">
                 <div className="elementor-element elementor-element-9791c87 elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
-                    <img className={"attachment-large \x73ize-large"} loading="lazy" decoding="async" width="695" height="695" src="/site-assets/9897bb759feafe83.jpg" alt="" srcSet="/site-assets/9897bb759feafe83.jpg 695w, /site-assets/d1f30404ae071548.jpg 300w, /site-assets/f42a3b695550fce1.jpg 150w" sizes="(max-width: 695px) 100vw, 695px" />
+                    <img className={"attachment-large \x73ize-large"} loading="lazy" decoding="async" width="695" height="695" src="/site-assets/9897bb759feafe83.jpg" alt="Dr. Asia Muhammad, ND, coach manager" srcSet="/site-assets/9897bb759feafe83.jpg 695w, /site-assets/d1f30404ae071548.jpg 300w, /site-assets/f42a3b695550fce1.jpg 150w" sizes="(max-width: 767px) 125px, 145px" />
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-03f52a9 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Dr. Asia Muhammad, ND</h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Dr. Asia Muhammad, ND</h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-2d4b8c0 elementor-widget elementor-widget-heading">
@@ -346,14 +412,14 @@ function Index() {
                 <div className="elementor-element elementor-element-1d047f8 elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
                     <picture className={"attachment-large \x73ize-large"} {...({ loading: "lazy", decoding: "async" } as any)}>
-                      <source type="image/webp" srcSet="/site-assets/d0316d2098252360.webp 487w, /site-assets/9310188be7788011.webp 300w" sizes="(max-width: 487px) 100vw, 487px" />
-                      <img loading="lazy" decoding="async" width="487" height="478" src="/site-assets/a1b7b28f7a79c094.jpg" alt="" srcSet="/site-assets/a1b7b28f7a79c094.jpg 487w, /site-assets/f3b5e5037449db5a.jpg 300w" sizes="(max-width: 487px) 100vw, 487px" />
+                      <source type="image/webp" srcSet="/site-assets/d0316d2098252360.webp 487w, /site-assets/9310188be7788011.webp 300w" sizes="(max-width: 767px) 125px, 145px" />
+                      <img loading="lazy" decoding="async" width="487" height="478" src="/site-assets/a1b7b28f7a79c094.jpg" alt="Dr. Chao, NMD, DC, LAc" srcSet="/site-assets/a1b7b28f7a79c094.jpg 487w, /site-assets/f3b5e5037449db5a.jpg 300w" sizes="(max-width: 767px) 125px, 145px" />
                     </picture>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-d2845be elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Dr. Chao, NMD, DC, LAc</h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Dr. Chao, NMD, DC, LAc</h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-74088e6 elementor-widget elementor-widget-heading">
@@ -366,15 +432,15 @@ function Index() {
                 <div className="elementor-element elementor-element-ccb4bd3 elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
                     <picture className={"attachment-large \x73ize-large"} {...({ loading: "lazy", decoding: "async" } as any)}>
-                      <source type="image/webp" srcSet="/site-assets/aa7bf59cddea4ba3.webp 500w, /site-assets/ed4be561e2148b58.webp 300w, /site-assets/28568d96ffde7e9f.webp 150w" sizes="(max-width: 500px) 100vw, 500px" />
-                      <img loading="lazy" decoding="async" width="500" height="500" src="/site-assets/50abaa687981eb18.jpg" alt="" srcSet="/site-assets/50abaa687981eb18.jpg 500w, /site-assets/b316500632f5064a.jpg 300w, /site-assets/4ef344624aba0c64.jpg 150w" sizes="(max-width: 500px) 100vw, 500px" />
+                      <source type="image/webp" srcSet="/site-assets/aa7bf59cddea4ba3.webp 500w, /site-assets/ed4be561e2148b58.webp 300w, /site-assets/28568d96ffde7e9f.webp 150w" sizes="(max-width: 767px) 125px, 145px" />
+                      <img loading="lazy" decoding="async" width="500" height="500" src="/site-assets/50abaa687981eb18.jpg" alt="Coach Taryn, RN, CFN" srcSet="/site-assets/50abaa687981eb18.jpg 500w, /site-assets/b316500632f5064a.jpg 300w, /site-assets/4ef344624aba0c64.jpg 150w" sizes="(max-width: 767px) 125px, 145px" />
                     </picture>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-0451eb7 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Coach Taryn, R.N., CFN
-      </h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Coach Taryn, R.N., CFN
+      </h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-9a32d23 elementor-widget elementor-widget-heading">
@@ -387,14 +453,14 @@ function Index() {
                 <div className="elementor-element elementor-element-3958d58 elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
                     <picture className={"attachment-large \x73ize-large"} {...({ loading: "lazy", decoding: "async" } as any)}>
-                      <source type="image/webp" srcSet="/site-assets/a6cf1b48e5010ae5.webp 500w, /site-assets/f7a2610d158fd4f9.webp 300w, /site-assets/c17c9c20fcab11c1.webp 150w" sizes="(max-width: 500px) 100vw, 500px" />
-                      <img loading="lazy" decoding="async" width="500" height="500" src="/site-assets/acadbcb811188e5c.jpg" alt="" srcSet="/site-assets/acadbcb811188e5c.jpg 500w, /site-assets/89fe91b397c54f6b.jpg 300w, /site-assets/1e99ad2c9f851111.jpg 150w" sizes="(max-width: 500px) 100vw, 500px" />
+                      <source type="image/webp" srcSet="/site-assets/a6cf1b48e5010ae5.webp 500w, /site-assets/f7a2610d158fd4f9.webp 300w, /site-assets/c17c9c20fcab11c1.webp 150w" sizes="(max-width: 767px) 125px, 145px" />
+                      <img loading="lazy" decoding="async" width="500" height="500" src="/site-assets/acadbcb811188e5c.jpg" alt="Coach Taylor, MSCN, RH" srcSet="/site-assets/acadbcb811188e5c.jpg 500w, /site-assets/89fe91b397c54f6b.jpg 300w, /site-assets/1e99ad2c9f851111.jpg 150w" sizes="(max-width: 767px) 125px, 145px" />
                     </picture>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-fe1a5fa elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Coach Taylor, MSCN, RH</h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Coach Taylor, MSCN, RH</h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-fafeed0 elementor-widget elementor-widget-heading">
@@ -407,14 +473,14 @@ function Index() {
                 <div className="elementor-element elementor-element-aecd4e1 elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
                     <picture className={"attachment-large \x73ize-large"} {...({ loading: "lazy", decoding: "async" } as any)}>
-                      <source type="image/webp" srcSet="/site-assets/5e8b5df0cdd9b5ae.webp 500w, /site-assets/56aa4f9c314024db.webp 300w, /site-assets/0435eaaa22629298.webp 150w" sizes="(max-width: 500px) 100vw, 500px" />
-                      <img loading="lazy" decoding="async" width="500" height="500" src="/site-assets/587d08c81769ea71.jpg" alt="" srcSet="/site-assets/587d08c81769ea71.jpg 500w, /site-assets/441c07f666271d68.jpg 300w, /site-assets/3dc3896a49874569.jpg 150w" sizes="(max-width: 500px) 100vw, 500px" />
+                      <source type="image/webp" srcSet="/site-assets/5e8b5df0cdd9b5ae.webp 500w, /site-assets/56aa4f9c314024db.webp 300w, /site-assets/0435eaaa22629298.webp 150w" sizes="(max-width: 767px) 125px, 145px" />
+                      <img loading="lazy" decoding="async" width="500" height="500" src="/site-assets/587d08c81769ea71.jpg" alt="Coach Arman, CHN" srcSet="/site-assets/587d08c81769ea71.jpg 500w, /site-assets/441c07f666271d68.jpg 300w, /site-assets/3dc3896a49874569.jpg 150w" sizes="(max-width: 767px) 125px, 145px" />
                     </picture>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-4e1aaf1 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Coach Arman, CHN</h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Coach Arman, CHN</h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-95db7d5 elementor-widget elementor-widget-heading">
@@ -427,14 +493,14 @@ function Index() {
                 <div className="elementor-element elementor-element-6027866 elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
                     <picture className={"attachment-large \x73ize-large"} {...({ loading: "lazy", decoding: "async" } as any)}>
-                      <source type="image/webp" srcSet="/site-assets/b16419bca5723db6.webp 500w, /site-assets/aa6d1d8f2357d99a.webp 300w, /site-assets/17c6c8da50e2ee07.webp 150w" sizes="(max-width: 500px) 100vw, 500px" />
-                      <img loading="lazy" decoding="async" width="500" height="500" src="/site-assets/ef064f1546dc2aa2.png" alt="" srcSet="/site-assets/ef064f1546dc2aa2.png 500w, /site-assets/dd8e2e229191bb3f.png 300w, /site-assets/8e231554d9c643e0.png 150w" sizes="(max-width: 500px) 100vw, 500px" />
+                      <source type="image/webp" srcSet="/site-assets/b16419bca5723db6.webp 500w, /site-assets/aa6d1d8f2357d99a.webp 300w, /site-assets/17c6c8da50e2ee07.webp 150w" sizes="(max-width: 767px) 125px, 145px" />
+                      <img loading="lazy" decoding="async" width="500" height="500" src="/site-assets/ef064f1546dc2aa2.png" alt="Coach Linsy, CHN" srcSet="/site-assets/ef064f1546dc2aa2.png 500w, /site-assets/dd8e2e229191bb3f.png 300w, /site-assets/8e231554d9c643e0.png 150w" sizes="(max-width: 767px) 125px, 145px" />
                     </picture>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-f0551c5 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Coach Linsy, CHN</h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Coach Linsy, CHN</h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-3b90a1f elementor-widget elementor-widget-heading">
@@ -447,15 +513,15 @@ function Index() {
                 <div className="elementor-element elementor-element-e36c5dc elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
                     <picture className={"attachment-large \x73ize-large"} {...({ loading: "lazy", decoding: "async" } as any)}>
-                      <source type="image/webp" srcSet="/site-assets/7474bb25656a14c9.webp 500w, /site-assets/64ea1d027561e184.webp 300w" sizes="(max-width: 500px) 100vw, 500px" />
-                      <img loading="lazy" decoding="async" width="500" height="459" src="/site-assets/484cd7fb09437e01.png" alt="" srcSet="/site-assets/484cd7fb09437e01.png 500w, /site-assets/1d0f3044332b1df7.png 300w" sizes="(max-width: 500px) 100vw, 500px" />
+                      <source type="image/webp" srcSet="/site-assets/7474bb25656a14c9.webp 500w, /site-assets/64ea1d027561e184.webp 300w" sizes="(max-width: 767px) 125px, 145px" />
+                      <img loading="lazy" decoding="async" width="500" height="459" src="/site-assets/484cd7fb09437e01.png" alt="Coach Dominique, ND" srcSet="/site-assets/484cd7fb09437e01.png 500w, /site-assets/1d0f3044332b1df7.png 300w" sizes="(max-width: 767px) 125px, 145px" />
                     </picture>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-5d0e219 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Coach Dominique, ND
-      </h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Coach Dominique, ND
+      </h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-5adfa19 elementor-widget elementor-widget-heading">
@@ -467,12 +533,12 @@ function Index() {
               <div className="elementor-element elementor-element-60629a9 e-con-full e-flex e-con">
                 <div className="elementor-element elementor-element-fd38f9a elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
-                    <img className={"attachment-large \x73ize-large"} loading="lazy" decoding="async" width="512" height="521" src="/site-assets/b7468d7bc980b6b8.webp" alt="Coach Michael - Crohn's Colitis Lifestyle" srcSet="/site-assets/b7468d7bc980b6b8.webp 512w, /site-assets/6301884d50239f62.webp 295w" sizes="(max-width: 512px) 100vw, 512px" />
+                    <img className={"attachment-large \x73ize-large"} loading="lazy" decoding="async" width="512" height="521" src="/site-assets/b7468d7bc980b6b8.webp" alt="Coach Michael - Crohn's Colitis Lifestyle" srcSet="/site-assets/b7468d7bc980b6b8.webp 512w, /site-assets/6301884d50239f62.webp 295w" sizes="(max-width: 767px) 125px, 145px" />
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-553b40c elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Coach Michael, CFNC</h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Coach Michael, CFNC</h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-4cc8a2a elementor-widget elementor-widget-heading">
@@ -485,14 +551,14 @@ function Index() {
                 <div className="elementor-element elementor-element-f095bbf elementor-widget elementor-widget-image">
                   <div className="elementor-widget-container">
                     <picture className={"attachment-large \x73ize-large"} {...({ loading: "lazy", decoding: "async" } as any)}>
-                      <source type="image/webp" srcSet="/site-assets/6da2f7d2c86bbf72.webp 400w, /site-assets/f826e14efa5fcf45.webp 300w, /site-assets/4bbefb3de54aef78.webp 150w" sizes="(max-width: 400px) 100vw, 400px" />
-                      <img loading="lazy" decoding="async" width="400" height="400" src="/site-assets/9be7bcb3af4d4d93.jpg" alt={"Coach Jon - Crohn&apos;s Colitis Lifestyle"} srcSet="/site-assets/9be7bcb3af4d4d93.jpg 400w, /site-assets/4ed6fa49f2e17952.jpg 300w, /site-assets/22938123d77d40c1.jpg 150w" sizes="(max-width: 400px) 100vw, 400px" />
+                      <source type="image/webp" srcSet="/site-assets/6da2f7d2c86bbf72.webp 400w, /site-assets/f826e14efa5fcf45.webp 300w, /site-assets/4bbefb3de54aef78.webp 150w" sizes="(max-width: 767px) 125px, 145px" />
+                      <img loading="lazy" decoding="async" width="400" height="400" src="/site-assets/9be7bcb3af4d4d93.jpg" alt={"Coach Jon - Crohn&apos;s Colitis Lifestyle"} srcSet="/site-assets/9be7bcb3af4d4d93.jpg 400w, /site-assets/4ed6fa49f2e17952.jpg 300w, /site-assets/22938123d77d40c1.jpg 150w" sizes="(max-width: 767px) 125px, 145px" />
                     </picture>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-887e248 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Coach Jon, HHC</h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Coach Jon, HHC</h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-9b5bf0f elementor-widget elementor-widget-heading">
@@ -537,7 +603,7 @@ function Index() {
                                   <p className="gutensuite-reviewkit-reviews__item-time">about 1 day ago</p>
                                 </div>
                               </div>
-                              <h4 className="gutensuite-reviewkit-reviews__item-title">SHIELD </h4>
+                              <h3 className="gutensuite-reviewkit-reviews__item-title">SHIELD </h3>
                               <p className="gutensuite-reviewkit-reviews__item-content">It's not about my results , but the trust and integrity with shield and the purpose behind it. 
 
       You know it's the right path when you fail and then pivot your plan, because there is no one answer<img className="emoji" draggable="false" role="img" alt="🙏" src="/site-assets/ce992a422e2e5dd5-84aaad175685be41ce270fc98be26511.png" />,
@@ -559,7 +625,7 @@ function Index() {
                                   <p className="gutensuite-reviewkit-reviews__item-time">about 2 days ago</p>
                                 </div>
                               </div>
-                              <h4 className="gutensuite-reviewkit-reviews__item-title">They know how to treat and specialize…</h4>
+                              <h3 className="gutensuite-reviewkit-reviews__item-title">They know how to treat and specialize…</h3>
                               <p className="gutensuite-reviewkit-reviews__item-content">They know how to treat and specialize in gut disorders. They have integrity, safety, trust, and accountability built into the program and they will get your plan Personalized specifically to you and your needs and they listen to you. Coach linsy is so wonderful to work with. Very knowledgeable and kind. Very supportive and smart. Has a wonderful personality and caring spirit. Her life experiences and hardships and lessons have equipped her for this.</p>
                             </article>
                           </div>
@@ -577,7 +643,7 @@ function Index() {
                                   <p className="gutensuite-reviewkit-reviews__item-time">about 3 months ago</p>
                                 </div>
                               </div>
-                              <h4 className="gutensuite-reviewkit-reviews__item-title">This is a natural health system that works!</h4>
+                              <h3 className="gutensuite-reviewkit-reviews__item-title">This is a natural health system that works!</h3>
                               <p className="gutensuite-reviewkit-reviews__item-content">With Dominique Loyer as my coach I had a great experience with my journey to better gut health! The way the program simplifies and gives a step by step approach to bettering ones health was much needed for me. It was also helpful having  a coach from my same country of canada to relate with me on my journey. I look to implement these lifestyle changes going forward. I Would recommend the program and a coach like Dominique to anyone in need of help!</p>
                             </article>
                           </div>
@@ -595,7 +661,7 @@ function Index() {
                                   <p className="gutensuite-reviewkit-reviews__item-time">about 2 days ago</p>
                                 </div>
                               </div>
-                              <h4 className="gutensuite-reviewkit-reviews__item-title">I absolutely love the IBD coaching</h4>
+                              <h3 className="gutensuite-reviewkit-reviews__item-title">I absolutely love the IBD coaching</h3>
                               <p className="gutensuite-reviewkit-reviews__item-content">I absolutely love the IBD coaching! <img className="emoji" draggable="false" role="img" alt="💚" src="/site-assets/eddf7d2e469cb165-b71a7e7cd95601bbea52f99923ef7dc8.png" /> It’s so refreshing to find a resource created with genuine care, knowledge and a real desire to help people navigate life with IBD.
 
       A special thank you to Dane Johnson for sharing his experience, knowledge and passion, and for creating a community that makes people feel supported, understood and less alone.
@@ -619,7 +685,7 @@ function Index() {
                                   <p className="gutensuite-reviewkit-reviews__item-time">about 3 days ago</p>
                                 </div>
                               </div>
-                              <h4 className="gutensuite-reviewkit-reviews__item-title">Fantastic resource </h4>
+                              <h3 className="gutensuite-reviewkit-reviews__item-title">Fantastic resource </h3>
                               <p className="gutensuite-reviewkit-reviews__item-content">My son has been with CCL since October of 2024, such a great resource! Coach Taylor is awesome. He has been utilizing this protocol ever since and doing really well!  This is such a fantastic community of members! Thankful to have found CCL!</p>
                             </article>
                           </div>
@@ -637,22 +703,22 @@ function Index() {
                                   <p className="gutensuite-reviewkit-reviews__item-time">about 12 months ago</p>
                                 </div>
                               </div>
-                              <h4 className="gutensuite-reviewkit-reviews__item-title">Get real results and heal, dont mask your symptoms</h4>
+                              <h3 className="gutensuite-reviewkit-reviews__item-title">Get real results and heal, dont mask your symptoms</h3>
                               <p className="gutensuite-reviewkit-reviews__item-content">Diagnosed with UC in 2022. Joined at the end of 2023 I think? after hesitating for a few months but the medications weren't working at that point and my liver numbers were elevated (GI just referred me away).  Within 3 weeks of joining I had most of my symptoms resolved. It requires dedication, work, and mindset shifts. But all of it works together so well that I have improved my overall health so much that I feel better now at 40 than I did in most of my 30s. Mainstream medicine does not have the answers for autoimmunity, these guys do, specifically for crohns and UC.  I have done the initial coaching and extended coaching with Taryn and she helped me improve so many layers of my health. Still tune in to the lives, and get good info.  I recommend this program. </p>
                             </article>
                           </div>
                         </div>
-                        <div className="swiper-pagination swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal">
-                          <span className="swiper-pagination-bullet swiper-pagination-bullet-active" tabIndex={0} role="button" aria-label="Go to slide 1" aria-current="true" />
-                          <span className="swiper-pagination-bullet" tabIndex={0} role="button" aria-label="Go to slide 2" />
-                          <span className="swiper-pagination-bullet" tabIndex={0} role="button" aria-label="Go to slide 3" />
-                          <span className="swiper-pagination-bullet" tabIndex={0} role="button" aria-label="Go to slide 4" />
-                          <span className="swiper-pagination-bullet" tabIndex={0} role="button" aria-label="Go to slide 5" />
-                          <span className="swiper-pagination-bullet" tabIndex={0} role="button" aria-label="Go to slide 6" />
+                        <div className="swiper-pagination swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal" role="group" aria-label="Review slides">
+                          <button type="button" className={"swiper-pagination-bullet" + ((slidePosition0?.index ?? 0) === 0 ? " swiper-pagination-bullet-active" : "")} aria-label="Go to slide 1" aria-current={(slidePosition0?.index ?? 0) === 0 ? "true" : undefined} onClick={() => moveToSlide0(0)} />
+                          <button type="button" className={"swiper-pagination-bullet" + (slidePosition0?.index === 1 ? " swiper-pagination-bullet-active" : "")} aria-label="Go to slide 2" aria-current={slidePosition0?.index === 1 ? "true" : undefined} onClick={() => moveToSlide0(1)} />
+                          <button type="button" className={"swiper-pagination-bullet" + (slidePosition0?.index === 2 ? " swiper-pagination-bullet-active" : "")} aria-label="Go to slide 3" aria-current={slidePosition0?.index === 2 ? "true" : undefined} onClick={() => moveToSlide0(2)} />
+                          <button type="button" className={"swiper-pagination-bullet" + (slidePosition0?.index === 3 ? " swiper-pagination-bullet-active" : "")} aria-label="Go to slide 4" aria-current={slidePosition0?.index === 3 ? "true" : undefined} onClick={() => moveToSlide0(3)} />
+                          <button type="button" className={"swiper-pagination-bullet" + (slidePosition0?.index === 4 ? " swiper-pagination-bullet-active" : "")} aria-label="Go to slide 5" aria-current={slidePosition0?.index === 4 ? "true" : undefined} onClick={() => moveToSlide0(4)} />
+                          <button type="button" className={"swiper-pagination-bullet" + (slidePosition0?.index === 5 ? " swiper-pagination-bullet-active" : "")} aria-label="Go to slide 6" aria-current={slidePosition0?.index === 5 ? "true" : undefined} onClick={() => moveToSlide0(5)} />
                         </div>
                         <span className="swiper-notification" aria-live="assertive" aria-atomic="true" />
                       </div>
-                      <div className="swiper-button-container"><span aria-disabled={slidePosition0 !== null && slidePosition0.offset >= slidePosition0.maximum - 1} className={["swiper-button-next", (slidePosition0 !== null && slidePosition0.offset >= slidePosition0.maximum - 1) && "swiper-button-disabled"].filter(Boolean).join(" ")} onClick={event => { event.preventDefault(); event.stopPropagation(); moveslideTrack0(1); }} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }} tabIndex={0} role="button" aria-label="Next slide" aria-controls="swiper-wrapper-e60d0b4a2317dd89">{"\n\t\t\t\t"}<span className="dashicons dashicons-arrow-right-alt2" />{"\n\t\t\t"}<svg className="swiper-navigation-icon" width="11" height="20" viewBox="0 0 11 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.38296 20.0762C0.111788 19.805 0.111788 19.3654 0.38296 19.0942L9.19758 10.2796L0.38296 1.46497C0.111788 1.19379 0.111788 0.754138 0.38296 0.482966C0.654131 0.211794 1.09379 0.211794 1.36496 0.482966L10.4341 9.55214C10.8359 9.9539 10.8359 10.6053 10.4341 11.007L1.36496 20.0762C1.09379 20.3474 0.654131 20.3474 0.38296 20.0762Z" fill="currentColor" /></svg></span><span aria-disabled={slidePosition0 !== null && slidePosition0.offset <= 1} className={["swiper-button-prev", (slidePosition0 !== null && slidePosition0.offset <= 1) && "swiper-button-disabled"].filter(Boolean).join(" ")} onClick={event => { event.preventDefault(); event.stopPropagation(); moveslideTrack0(-1); }} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }} tabIndex={0} role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-e60d0b4a2317dd89">{"\n\t\t\t\t"}<span className="dashicons" />{"\n\t\t\t"}<svg className="swiper-navigation-icon" width="11" height="20" viewBox="0 0 11 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.38296 20.0762C0.111788 19.805 0.111788 19.3654 0.38296 19.0942L9.19758 10.2796L0.38296 1.46497C0.111788 1.19379 0.111788 0.754138 0.38296 0.482966C0.654131 0.211794 1.09379 0.211794 1.36496 0.482966L10.4341 9.55214C10.8359 9.9539 10.8359 10.6053 10.4341 11.007L1.36496 20.0762C1.09379 20.3474 0.654131 20.3474 0.38296 20.0762Z" fill="currentColor" /></svg></span></div>
+                      <div className="swiper-button-container"><button type="button" disabled={slidePosition0 !== null && slidePosition0.offset >= slidePosition0.maximum - 1} className={["swiper-button-next", (slidePosition0 !== null && slidePosition0.offset >= slidePosition0.maximum - 1) && "swiper-button-disabled"].filter(Boolean).join(" ")} onClick={() => moveslideTrack0(1)} aria-label="Next slide" aria-controls="swiper-wrapper-e60d0b4a2317dd89">{"\n\t\t\t\t"}<span className="dashicons dashicons-arrow-right-alt2" />{"\n\t\t\t"}<svg className="swiper-navigation-icon" width="11" height="20" viewBox="0 0 11 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.38296 20.0762C0.111788 19.805 0.111788 19.3654 0.38296 19.0942L9.19758 10.2796L0.38296 1.46497C0.111788 1.19379 0.111788 0.754138 0.38296 0.482966C0.654131 0.211794 1.09379 0.211794 1.36496 0.482966L10.4341 9.55214C10.8359 9.9539 10.8359 10.6053 10.4341 11.007L1.36496 20.0762C1.09379 20.3474 0.654131 20.3474 0.38296 20.0762Z" fill="currentColor" /></svg></button><button type="button" disabled={slidePosition0 !== null && slidePosition0.offset <= 1} className={["swiper-button-prev", (slidePosition0 !== null && slidePosition0.offset <= 1) && "swiper-button-disabled"].filter(Boolean).join(" ")} onClick={() => moveslideTrack0(-1)} aria-label="Previous slide" aria-controls="swiper-wrapper-e60d0b4a2317dd89">{"\n\t\t\t\t"}<span className="dashicons" />{"\n\t\t\t"}<svg className="swiper-navigation-icon" width="11" height="20" viewBox="0 0 11 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.38296 20.0762C0.111788 19.805 0.111788 19.3654 0.38296 19.0942L9.19758 10.2796L0.38296 1.46497C0.111788 1.19379 0.111788 0.754138 0.38296 0.482966C0.654131 0.211794 1.09379 0.211794 1.36496 0.482966L10.4341 9.55214C10.8359 9.9539 10.8359 10.6053 10.4341 11.007L1.36496 20.0762C1.09379 20.3474 0.654131 20.3474 0.38296 20.0762Z" fill="currentColor" /></svg></button></div>
                     </div>
                   </section>
                 </div>
@@ -665,7 +731,7 @@ function Index() {
             <div className="elementor-element elementor-element-3040ba5 e-con-full e-flex e-con">
               <div className="elementor-element elementor-element-2610a57 elementor-widget elementor-widget-image">
                 <div className="elementor-widget-container">
-                  <img className={"attachment-full \x73ize-full"} loading="lazy" decoding="async" width="745" height="740" src="/site-assets/6695e7af59f11c19.jpg" alt="" srcSet="/site-assets/6695e7af59f11c19.jpg 745w, /site-assets/7050345c92c96f7b.jpg 300w, /site-assets/bd7bf00073305a28.jpg 150w" sizes="(max-width: 745px) 100vw, 745px" />
+                  <img className={"attachment-full \x73ize-full"} loading="lazy" decoding="async" width="745" height="740" src="/site-assets/6695e7af59f11c19.jpg" alt="Dane Johnson sharing his Crohn’s disease story" srcSet="/site-assets/6695e7af59f11c19.jpg 745w, /site-assets/7050345c92c96f7b.jpg 300w, /site-assets/bd7bf00073305a28.jpg 150w" sizes="(max-width: 767px) 70vw, 465px" />
                 </div>
               </div>
               <div className="elementor-element elementor-element-65e4597 elementor-widget elementor-widget-text-editor">
@@ -805,7 +871,7 @@ function Index() {
               <div className="elementor-element elementor-element-e9894c9 e-con-full e-flex e-con">
                 <div className="elementor-element elementor-element-adc6af6 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">01</h2>
+                    <p className="elementor-heading-title elementor-size-default homepage-step-number">01</p>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-cc7cb1c elementor-widget elementor-widget-text-editor">
@@ -815,8 +881,8 @@ function Index() {
                 </div>
                 <div className="elementor-element elementor-element-ace55a6 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Private Coaching
-      </h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Private Coaching
+      </h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-cf2cf8c elementor-widget elementor-widget-text-editor">
@@ -828,7 +894,7 @@ function Index() {
               <div className="elementor-element elementor-element-b77a1f5 e-con-full e-flex e-con">
                 <div className="elementor-element elementor-element-6737275 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">02</h2>
+                    <p className="elementor-heading-title elementor-size-default homepage-step-number">02</p>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-df57fd9 elementor-widget elementor-widget-text-editor">
@@ -838,8 +904,8 @@ function Index() {
                 </div>
                 <div className="elementor-element elementor-element-c911598 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Professional Grade Supplements, Lab Work &amp; Therapies
-      </h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Professional Grade Supplements, Lab Work &amp; Therapies
+      </h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-9750306 elementor-widget elementor-widget-text-editor">
@@ -851,7 +917,7 @@ function Index() {
               <div className="elementor-element elementor-element-5cfafe6 e-con-full e-flex e-con">
                 <div className="elementor-element elementor-element-6ba2c18 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">03</h2>
+                    <p className="elementor-heading-title elementor-size-default homepage-step-number">03</p>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-fbd9621 elementor-widget elementor-widget-text-editor">
@@ -861,8 +927,8 @@ function Index() {
                 </div>
                 <div className="elementor-element elementor-element-ce62202 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Customized IBD Solutions
-      </h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Customized IBD Solutions
+      </h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-2483a5e elementor-widget elementor-widget-text-editor">
@@ -876,7 +942,7 @@ function Index() {
               <div className="elementor-element elementor-element-c9dd9d4 e-con-full e-flex e-con">
                 <div className="elementor-element elementor-element-fc019cd elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">04</h2>
+                    <p className="elementor-heading-title elementor-size-default homepage-step-number">04</p>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-d071da4 elementor-widget elementor-widget-text-editor">
@@ -886,8 +952,8 @@ function Index() {
                 </div>
                 <div className="elementor-element elementor-element-03fa9ae elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">LIVE Training &amp; Community Access
-      </h2>
+                    <h3 className="elementor-heading-title elementor-size-default">LIVE Training &amp; Community Access
+      </h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-1ea6cf8 elementor-widget elementor-widget-text-editor">
@@ -899,7 +965,7 @@ function Index() {
               <div className="elementor-element elementor-element-a0f94bd e-con-full e-flex e-con">
                 <div className="elementor-element elementor-element-3c1ca7b elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">05</h2>
+                    <p className="elementor-heading-title elementor-size-default homepage-step-number">05</p>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-2677d46 elementor-widget elementor-widget-text-editor">
@@ -909,8 +975,8 @@ function Index() {
                 </div>
                 <div className="elementor-element elementor-element-8fbbe36 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Support Specialist
-      </h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Support Specialist
+      </h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-96475fb elementor-widget elementor-widget-text-editor">
@@ -923,7 +989,7 @@ function Index() {
               <div className="elementor-element elementor-element-ae8593d e-con-full e-flex e-con">
                 <div className="elementor-element elementor-element-b2b2cd6 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">06</h2>
+                    <p className="elementor-heading-title elementor-size-default homepage-step-number">06</p>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-f9c2943 elementor-widget elementor-widget-text-editor">
@@ -935,8 +1001,8 @@ function Index() {
                 </div>
                 <div className="elementor-element elementor-element-8683272 elementor-widget elementor-widget-heading">
                   <div className="elementor-widget-container">
-                    <h2 className="elementor-heading-title elementor-size-default">Lifetime Membership
-      </h2>
+                    <h3 className="elementor-heading-title elementor-size-default">Lifetime Membership
+      </h3>
                   </div>
                 </div>
                 <div className="elementor-element elementor-element-6a62feb elementor-widget elementor-widget-text-editor">
@@ -957,7 +1023,7 @@ function Index() {
               <div className="elementor-element elementor-element-f2368b6 elementor-align-center elementor-mobile-align-center elementor-widget elementor-widget-button [width:100%]">
                 <div className="elementor-widget-container">
                   <div className="elementor-button-wrapper">
-                    <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" target="_blank">
+                    <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" rel="noopener noreferrer" target="_blank">
                       <span className="elementor-button-content-wrapper">{"\n\t\t\t\t\t\t"}<span className="elementor-button-icon">{"\n\t\t\t\t"}<i className="fas fa-long-arrow-alt-right" aria-hidden="true" />{"\t\t\t"}</span>{"\n\t\t\t\t\t\t\t\t\t"}<span className="elementor-button-text">Book Your Free IBD Session</span>{"\n\t\t\t\t\t"}</span>
                     </a>
                   </div>
@@ -967,6 +1033,7 @@ function Index() {
           </div>
         </div>
       </div>
+      </main>
       <ImportedFooterExplore />
       <div id="fb-pxl-ajax-code" />
       <span className="elementor-screen-only" id="elementor-device-mode" />
@@ -981,7 +1048,7 @@ function ImportedHeader() {
   const [menuLeft, setMenuLeft] = useState(0);
   const [stuck, setStuck] = useState(false);
   const topBar = useRef<HTMLDivElement | null>(null);
-  const menuToggle = useRef<HTMLDivElement | null>(null);
+  const menuToggle = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
     // Elementor sticky: the nav bar pins once the announcement bar has scrolled away (always pinned on phones, where that bar is hidden).
     const update = () => setStuck(window.scrollY >= (topBar.current?.offsetHeight ?? 0));
@@ -1024,7 +1091,7 @@ function ImportedHeader() {
           <div className="elementor-element elementor-element-17e2b1f elementor-widget elementor-widget-button">
             <div className="elementor-widget-container">
               <div className="elementor-button-wrapper">
-                <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" target="_blank">
+                <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" rel="noopener noreferrer" target="_blank">
                   <span className="elementor-button-content-wrapper">{"\n\t\t\t\t\t\t"}<span className="elementor-button-icon">{"\n\t\t\t\t"}<i className="fas fa-long-arrow-alt-right" aria-hidden="true" />{"\t\t\t"}</span>{"\n\t\t\t\t\t\t\t\t\t"}<span className="elementor-button-text">Schedule your free call</span>{"\n\t\t\t\t\t"}</span>
                 </a>
               </div>
@@ -1037,7 +1104,7 @@ function ImportedHeader() {
           <div className="elementor-element elementor-element-951d4e7 elementor-widget elementor-widget-image">
             <div className="elementor-widget-container">
               <a href="/">
-                <img className={"attachment-full \x73ize-full wp-image-54"} width="457" height="107" src="/site-assets/5497fe353f8f8cb2.png" alt="" srcSet="/site-assets/5497fe353f8f8cb2.png 457w, /site-assets/3e05585739b27ff2.png 300w" sizes="(max-width: 457px) 100vw, 457px" />
+                <img className={"attachment-full \x73ize-full wp-image-54"} width="457" height="107" src="/site-assets/5497fe353f8f8cb2.png" alt="Crohn’s & Colitis Lifestyle" srcSet="/site-assets/5497fe353f8f8cb2.png 457w, /site-assets/3e05585739b27ff2.png 300w" sizes="(max-width: 457px) 100vw, 457px" />
               </a>
             </div>
           </div>
@@ -1046,36 +1113,36 @@ function ImportedHeader() {
               <nav className="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-underline" aria-label="Menu">
                 <ul className="elementor-nav-menu" id="menu-1-a61003d">
                   <li className="menu-item">
-                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" target="_blank">S.H.I.E.L.D. Program</a>
+                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" rel="noopener noreferrer" target="_blank">S.H.I.E.L.D. Program</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/about-us">Team</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/about-us">Team</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/testimonials">Testimonies</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/testimonials">Testimonies</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/podcast">Podcast</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/podcast">Podcast</a>
                   </li>
                 </ul>
               </nav>
-              <div ref={menuToggle} className={"elementor-menu-toggle" + (menuOpen ? " elementor-active" : "")} role="button" tabIndex={0} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} aria-controls="menu-2-a61003d" onClick={toggleMenu} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggleMenu(); } }}>
+              <button type="button" ref={menuToggle} className={"elementor-menu-toggle" + (menuOpen ? " elementor-active" : "")} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} aria-controls="menu-2-a61003d" onClick={toggleMenu}>
                 <i className="elementor-menu-toggle__icon--open eicon-menu-bar" aria-hidden="true" role="presentation" />
                 <i className="elementor-menu-toggle__icon--close eicon-close" aria-hidden="true" role="presentation" />
-              </div>
+              </button>
               <nav className="elementor-nav-menu--dropdown elementor-nav-menu__container" style={{ width: "100vw", left: `${menuLeft}px`, top: "33px", "--menu-height": menuOpen ? "100vh" : "0" } as CSSProperties} aria-hidden={!menuOpen} data-site-import-responsive="726">
                 <ul className="elementor-nav-menu" id="menu-2-a61003d">
                   <li className="menu-item">
-                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)} target="_blank">S.H.I.E.L.D. Program</a>
+                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)} rel="noopener noreferrer" target="_blank">S.H.I.E.L.D. Program</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/about-us" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Team</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/about-us" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Team</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/testimonials" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Testimonies</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/testimonials" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Testimonies</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/podcast" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Podcast</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/podcast" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Podcast</a>
                   </li>
                 </ul>
               </nav>
@@ -1085,7 +1152,7 @@ function ImportedHeader() {
             <div className="elementor-element elementor-element-897aa3b elementor-align-justify elementor-widget__width-initial elementor-mobile-align-center elementor-hidden-mobile elementor-widget elementor-widget-button">
               <div className="elementor-widget-container">
                 <div className="elementor-button-wrapper">
-                  <a className="elementor-button elementor-size-sm" href="https://theibdshop.com/" target="_blank">
+                  <a className="elementor-button elementor-size-sm" href="https://theibdshop.com/" rel="noopener noreferrer" target="_blank">
                     <span className="elementor-button-content-wrapper">{"\n\t\t\t\t\t\t"}<span className="elementor-button-icon">{"\n\t\t\t\t"}<i className="fas fa-long-arrow-alt-right" aria-hidden="true" />{"\t\t\t"}</span>{"\n\t\t\t\t\t\t\t\t\t"}<span className="elementor-button-text">Shop</span>{"\n\t\t\t\t\t"}</span>
                   </a>
                 </div>
@@ -1094,7 +1161,7 @@ function ImportedHeader() {
             <div className="elementor-element elementor-element-a33024f elementor-align-justify elementor-widget__width-initial elementor-mobile-align-center elementor-hidden-mobile elementor-widget elementor-widget-button">
               <div className="elementor-widget-container">
                 <div className="elementor-button-wrapper">
-                  <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" target="_blank">
+                  <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" rel="noopener noreferrer" target="_blank">
                     <span className="elementor-button-content-wrapper">{"\n\t\t\t\t\t\t"}<span className="elementor-button-icon">{"\n\t\t\t\t"}<i className="fas fa-long-arrow-alt-right" aria-hidden="true" />{"\t\t\t"}</span>{"\n\t\t\t\t\t\t\t\t\t"}<span className="elementor-button-text">Book My IBD Strategy Session</span>{"\n\t\t\t\t\t"}</span>
                   </a>
                 </div>
@@ -1115,18 +1182,18 @@ function ImportedHeader() {
           <div className="elementor-element elementor-element-a61003d elementor-nav-menu__align-end elementor-nav-menu--stretch elementor-nav-menu__text-align-center elementor-nav-menu--dropdown-tablet elementor-nav-menu--toggle elementor-widget elementor-widget-nav-menu">
             <div className="elementor-widget-container">
               <nav className="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-underline" aria-label="Menu">
-                <ul className="elementor-nav-menu" id="menu-1-a61003d">
+                <ul className="elementor-nav-menu" id="menu-1-a61003d-spacer">
                   <li className="menu-item">
-                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" target="_blank">S.H.I.E.L.D. Program</a>
+                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" rel="noopener noreferrer" target="_blank">S.H.I.E.L.D. Program</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/about-us">Team</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/about-us">Team</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/testimonials">Testimonies</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/testimonials">Testimonies</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/podcast">Podcast</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/podcast">Podcast</a>
                   </li>
                 </ul>
               </nav>
@@ -1135,18 +1202,18 @@ function ImportedHeader() {
                 <i className="elementor-menu-toggle__icon--close eicon-close" aria-hidden="true" role="presentation" />
               </div>
               <nav className="elementor-nav-menu--dropdown elementor-nav-menu__container" style={{ top: "48.3906px", "--menu-height": "0", width: "1273px", left: "0px" } as CSSProperties} aria-hidden="true">
-                <ul className="elementor-nav-menu" id="menu-2-a61003d">
+                <ul className="elementor-nav-menu" id="menu-2-a61003d-spacer">
                   <li className="menu-item">
-                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" tabIndex={-1} target="_blank">S.H.I.E.L.D. Program</a>
+                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" tabIndex={-1} rel="noopener noreferrer" target="_blank">S.H.I.E.L.D. Program</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/about-us" tabIndex={-1}>Team</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/about-us" tabIndex={-1}>Team</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/testimonials" tabIndex={-1}>Testimonies</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/testimonials" tabIndex={-1}>Testimonies</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/podcast" tabIndex={-1}>Podcast</a>
+                    <a className="elementor-item" href="https://crohnscolitislifestyle.com/podcast" tabIndex={-1}>Podcast</a>
                   </li>
                 </ul>
               </nav>
@@ -1156,7 +1223,7 @@ function ImportedHeader() {
             <div className="elementor-element elementor-element-897aa3b elementor-align-justify elementor-widget__width-initial elementor-mobile-align-center elementor-hidden-mobile elementor-widget elementor-widget-button">
               <div className="elementor-widget-container">
                 <div className="elementor-button-wrapper">
-                  <a className="elementor-button elementor-size-sm" href="https://theibdshop.com/" target="_blank">
+                  <a className="elementor-button elementor-size-sm" href="https://theibdshop.com/" rel="noopener noreferrer" target="_blank">
                     <span className="elementor-button-content-wrapper">{"\n\t\t\t\t\t\t"}<span className="elementor-button-icon">{"\n\t\t\t\t"}<i className="fas fa-long-arrow-alt-right" aria-hidden="true" />{"\t\t\t"}</span>{"\n\t\t\t\t\t\t\t\t\t"}<span className="elementor-button-text">Shop</span>{"\n\t\t\t\t\t"}</span>
                   </a>
                 </div>
@@ -1165,7 +1232,7 @@ function ImportedHeader() {
             <div className="elementor-element elementor-element-a33024f elementor-align-justify elementor-widget__width-initial elementor-mobile-align-center elementor-hidden-mobile elementor-widget elementor-widget-button">
               <div className="elementor-widget-container">
                 <div className="elementor-button-wrapper">
-                  <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" target="_blank">
+                  <a className="elementor-button elementor-size-sm" href="https://www.cclworkshop.com/apply?el=website" rel="noopener noreferrer" target="_blank">
                     <span className="elementor-button-content-wrapper">{"\n\t\t\t\t\t\t"}<span className="elementor-button-icon">{"\n\t\t\t\t"}<i className="fas fa-long-arrow-alt-right" aria-hidden="true" />{"\t\t\t"}</span>{"\n\t\t\t\t\t\t\t\t\t"}<span className="elementor-button-text">Book My IBD Strategy Session</span>{"\n\t\t\t\t\t"}</span>
                   </a>
                 </div>
@@ -1187,7 +1254,7 @@ function ImportedFooterExplore() {
             <div className="elementor-element elementor-element-b371a0a e-con-full e-flex e-con">
               <div className="elementor-element elementor-element-c64d61c elementor-widget elementor-widget-image">
                 <div className="elementor-widget-container">
-                  <img className={"attachment-large \x73ize-large wp-image-54 [filter:brightness(200%)_contrast(200%)_saturate(0%)_blur(0px)_hue-rotate(0deg)]"} width="457" height="107" src="/site-assets/5497fe353f8f8cb2.png" alt="" srcSet="/site-assets/5497fe353f8f8cb2.png 457w, /site-assets/3e05585739b27ff2.png 300w" sizes="(max-width: 457px) 100vw, 457px" />
+                  <img className={"attachment-large \x73ize-large wp-image-54 [filter:brightness(200%)_contrast(200%)_saturate(0%)_blur(0px)_hue-rotate(0deg)]"} width="457" height="107" src="/site-assets/5497fe353f8f8cb2.png" alt="Crohn’s & Colitis Lifestyle" srcSet="/site-assets/5497fe353f8f8cb2.png 457w, /site-assets/3e05585739b27ff2.png 300w" sizes="(max-width: 457px) 100vw, 457px" />
                 </div>
               </div>
               <div className="elementor-element elementor-element-e3b5c4c elementor-widget elementor-widget-heading">
@@ -1199,7 +1266,7 @@ function ImportedFooterExplore() {
               </div>
               <div className="elementor-element elementor-element-f062c70 e-grid-align-left elementor-shape-rounded elementor-grid-0 elementor-widget elementor-widget-social-icons">
                 <div className="elementor-widget-container">
-                  <div className="elementor-grid [column-gap:var(--grid-column-gap,5px)] [grid-template-columns:var(--grid-template-columns)] [justify-content:var(--justify-content,center)] [justify-items:var(--justify-content,center)] [row-gap:var(--grid-row-gap,5px)] [width:100%] [word-spacing:var(--grid-column-gap)]" role="list"><span className="elementor-grid-item [min-width:0px] [word-break:break-word]" role="listitem">{"\n\t\t\t\t\t"}<a className="elementor-icon elementor-social-icon elementor-social-icon-instagram items-center [width:calc(var(--icon-size,25px)_+_2_*_var(--icon-padding,.5em))]" href="https://www.instagram.com/crohnscolitis_lifestyle/" target="_blank">{"\n\t\t\t\t\t\t"}<span className="elementor-screen-only">Instagram</span>{"\n\t\t\t\t\t\t"}<i className="fab fa-instagram" aria-hidden="true" />{"\t\t\t\t\t"}</a>{"\n\t\t\t\t"}</span><span className="elementor-grid-item [min-width:0px] [word-break:break-word]" role="listitem">{"\n\t\t\t\t\t"}<a className="elementor-icon elementor-social-icon elementor-social-icon-facebook items-center [width:calc(var(--icon-size,25px)_+_2_*_var(--icon-padding,.5em))]" href="https://www.facebook.com/CrohnsColitisLifestyle" target="_blank">{"\n\t\t\t\t\t\t"}<span className="elementor-screen-only">Facebook</span>{"\n\t\t\t\t\t\t"}<i className="fab fa-facebook" aria-hidden="true" />{"\t\t\t\t\t"}</a>{"\n\t\t\t\t"}</span><span className="elementor-grid-item [min-width:0px] [word-break:break-word]" role="listitem">{"\n\t\t\t\t\t"}<a className="elementor-icon elementor-social-icon elementor-social-icon-youtube items-center [width:calc(var(--icon-size,25px)_+_2_*_var(--icon-padding,.5em))]" href="https://www.youtube.com/@crohnscolitislifestyle" target="_blank">{"\n\t\t\t\t\t\t"}<span className="elementor-screen-only">Youtube</span>{"\n\t\t\t\t\t\t"}<i className="fab fa-youtube" aria-hidden="true" />{"\t\t\t\t\t"}</a>{"\n\t\t\t\t"}</span><span className="elementor-grid-item [min-width:0px] [word-break:break-word]" role="listitem">{"\n\t\t\t\t\t"}<a className="elementor-icon elementor-social-icon elementor-social-icon-spotify items-center [width:calc(var(--icon-size,25px)_+_2_*_var(--icon-padding,.5em))]" href={"https://open.spotify.com/show/1tZs7YAhGD1LWLCd6krtT1?si=bde1ca0ae3f145dd&nd=1&dlsi=eb74d1d46c244c0a"} target="_blank">{"\n\t\t\t\t\t\t"}<span className="elementor-screen-only">Spotify</span>{"\n\t\t\t\t\t\t"}<i className="fab fa-spotify" aria-hidden="true" />{"\t\t\t\t\t"}</a>{"\n\t\t\t\t"}</span></div>
+                  <div className="elementor-grid [column-gap:var(--grid-column-gap,5px)] [grid-template-columns:var(--grid-template-columns)] [justify-content:var(--justify-content,center)] [justify-items:var(--justify-content,center)] [row-gap:var(--grid-row-gap,5px)] [width:100%] [word-spacing:var(--grid-column-gap)]" role="list"><span className="elementor-grid-item [min-width:0px] [word-break:break-word]" role="listitem">{"\n\t\t\t\t\t"}<a className="elementor-icon elementor-social-icon elementor-social-icon-instagram items-center [width:calc(var(--icon-size,25px)_+_2_*_var(--icon-padding,.5em))]" href="https://www.instagram.com/crohnscolitis_lifestyle/" rel="noopener noreferrer" target="_blank">{"\n\t\t\t\t\t\t"}<span className="elementor-screen-only">Instagram</span>{"\n\t\t\t\t\t\t"}<i className="fab fa-instagram" aria-hidden="true" />{"\t\t\t\t\t"}</a>{"\n\t\t\t\t"}</span><span className="elementor-grid-item [min-width:0px] [word-break:break-word]" role="listitem">{"\n\t\t\t\t\t"}<a className="elementor-icon elementor-social-icon elementor-social-icon-facebook items-center [width:calc(var(--icon-size,25px)_+_2_*_var(--icon-padding,.5em))]" href="https://www.facebook.com/CrohnsColitisLifestyle" rel="noopener noreferrer" target="_blank">{"\n\t\t\t\t\t\t"}<span className="elementor-screen-only">Facebook</span>{"\n\t\t\t\t\t\t"}<i className="fab fa-facebook" aria-hidden="true" />{"\t\t\t\t\t"}</a>{"\n\t\t\t\t"}</span><span className="elementor-grid-item [min-width:0px] [word-break:break-word]" role="listitem">{"\n\t\t\t\t\t"}<a className="elementor-icon elementor-social-icon elementor-social-icon-youtube items-center [width:calc(var(--icon-size,25px)_+_2_*_var(--icon-padding,.5em))]" href="https://www.youtube.com/@crohnscolitislifestyle" rel="noopener noreferrer" target="_blank">{"\n\t\t\t\t\t\t"}<span className="elementor-screen-only">Youtube</span>{"\n\t\t\t\t\t\t"}<i className="fab fa-youtube" aria-hidden="true" />{"\t\t\t\t\t"}</a>{"\n\t\t\t\t"}</span><span className="elementor-grid-item [min-width:0px] [word-break:break-word]" role="listitem">{"\n\t\t\t\t\t"}<a className="elementor-icon elementor-social-icon elementor-social-icon-spotify items-center [width:calc(var(--icon-size,25px)_+_2_*_var(--icon-padding,.5em))]" href={"https://open.spotify.com/show/1tZs7YAhGD1LWLCd6krtT1?si=bde1ca0ae3f145dd&nd=1&dlsi=eb74d1d46c244c0a"} rel="noopener noreferrer" target="_blank">{"\n\t\t\t\t\t\t"}<span className="elementor-screen-only">Spotify</span>{"\n\t\t\t\t\t\t"}<i className="fab fa-spotify" aria-hidden="true" />{"\t\t\t\t\t"}</a>{"\n\t\t\t\t"}</span></div>
                 </div>
               </div>
             </div>
@@ -1214,22 +1281,22 @@ function ImportedFooterExplore() {
                 <div className="elementor-widget-container">
                   <ul className="elementor-icon-list-items">
                     <li className="elementor-icon-list-item">
-                      <a href="/about-us">
+                      <a href="https://crohnscolitislifestyle.com/about-us">
                         <span className="elementor-icon-list-text">Team</span>
                       </a>
                     </li>
                     <li className="elementor-icon-list-item">
-                      <a href="/testimonials">
+                      <a href="https://crohnscolitislifestyle.com/testimonials">
                         <span className="elementor-icon-list-text">Testimonies</span>
                       </a>
                     </li>
                     <li className="elementor-icon-list-item">
-                      <a href="/podcast">
+                      <a href="https://crohnscolitislifestyle.com/podcast">
                         <span className="elementor-icon-list-text">Podcast</span>
                       </a>
                     </li>
                     <li className="elementor-icon-list-item">
-                      <a href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" target="_blank">
+                      <a href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" rel="noopener noreferrer" target="_blank">
                         <span className="elementor-icon-list-text">S.H.I.E.L.D. Program</span>
                       </a>
                     </li>
@@ -1247,12 +1314,12 @@ function ImportedFooterExplore() {
                 <div className="elementor-widget-container">
                   <ul className="elementor-icon-list-items">
                     <li className="elementor-icon-list-item">
-                      <a href="https://www.cclworkshop.com/apply?el=website" target="_blank">
+                      <a href="https://www.cclworkshop.com/apply?el=website" rel="noopener noreferrer" target="_blank">
                         <span className="elementor-icon-list-text">Free Strategy Session</span>
                       </a>
                     </li>
                     <li className="elementor-icon-list-item">
-                      <a href="http://6tips.crohnscolitislifestyle.com/?el=website" target="_blank">
+                      <a href="https://6tips.crohnscolitislifestyle.com/?el=website" rel="noopener noreferrer" target="_blank">
                         <span className="elementor-icon-list-text">Download Free Guide</span>
                       </a>
                     </li>
@@ -1270,22 +1337,22 @@ function ImportedFooterExplore() {
                 <div className="elementor-widget-container">
                   <ul className="elementor-icon-list-items">
                     <li className="elementor-icon-list-item">
-                      <a href="https://theibdshop.com/" target="_blank">
+                      <a href="https://theibdshop.com/" rel="noopener noreferrer" target="_blank">
                         <span className="elementor-icon-list-text">Shop All Products</span>
                       </a>
                     </li>
                     <li className="elementor-icon-list-item">
-                      <a href="https://theibdshop.com/collections/all/best-sellers" target="_blank">
+                      <a href="https://theibdshop.com/collections/all/best-sellers" rel="noopener noreferrer" target="_blank">
                         <span className="elementor-icon-list-text">Best Sellers</span>
                       </a>
                     </li>
                     <li className="elementor-icon-list-item">
-                      <a href="https://theibdshop.com/collections/bundles" target="_blank">
+                      <a href="https://theibdshop.com/collections/bundles" rel="noopener noreferrer" target="_blank">
                         <span className="elementor-icon-list-text">Bundle Packs</span>
                       </a>
                     </li>
                     <li className="elementor-icon-list-item">
-                      <a href="https://theibdshop.com/collections/all/travel-must-haves" target="_blank">
+                      <a href="https://theibdshop.com/collections/all/travel-must-haves" rel="noopener noreferrer" target="_blank">
                         <span className="elementor-icon-list-text">Travel Must-Haves</span>
                       </a>
                     </li>
@@ -1312,7 +1379,7 @@ function ImportedFooterExplore() {
                 <div className="elementor-widget-container">
                   <p>
                     <span style={{ color: "rgb(255, 255, 255)" }}>
-                      <a style={{ color: "rgb(255, 255, 255)" }} href="/privacy-policy" rel="noopener" target="_blank">Privacy Policy </a>
+                      <a style={{ color: "rgb(255, 255, 255)" }} href="https://crohnscolitislifestyle.com/privacy-policy" rel="noopener noreferrer" target="_blank">Privacy Policy </a>
                     </span>
                   </p>
                 </div>
@@ -1321,7 +1388,7 @@ function ImportedFooterExplore() {
                 <div className="elementor-widget-container">
                   <p>
                     <span style={{ color: "rgb(255, 255, 255)" }}>
-                      <a style={{ color: "rgb(255, 255, 255)" }} href="/terms-conditions" rel="noopener" target="_blank">Terms &amp; Conditions</a>
+                      <a style={{ color: "rgb(255, 255, 255)" }} href="https://crohnscolitislifestyle.com/terms-conditions" rel="noopener noreferrer" target="_blank">Terms &amp; Conditions</a>
                     </span>
                   </p>
                 </div>

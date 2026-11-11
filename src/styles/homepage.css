@@ -1,0 +1,144 @@
+.homepage-skip-link {
+  position: fixed;
+  z-index: 99999;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.75rem 1rem;
+  transform: translateY(calc(-100% - 1rem));
+  border-radius: 0.25rem;
+  background: #16352f;
+  color: #fff;
+  transition: transform 120ms ease-out;
+}
+
+.homepage-skip-link:focus {
+  transform: translateY(0);
+}
+
+#main-content:focus {
+  outline: none;
+}
+
+.elementor-13003 [style*="color: rgb(194, 164, 59)"] {
+  color: #755f15 !important;
+}
+
+.homepage-step-number {
+  color: #755f15 !important;
+}
+
+.gutensuite-reviewkit-reviews__item-author,
+.gutensuite-reviewkit-reviews__item-time {
+  color: #555 !important;
+}
+
+.style-carousel .swiper-button-next,
+.style-carousel .swiper-button-prev {
+  width: 44px !important;
+  height: 44px !important;
+  border: 1px solid #16352f !important;
+  color: #16352f !important;
+}
+
+.gutensuite-reviewkit-wrap {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+.elementor-menu-toggle:focus-visible,
+.elementor-icon:focus-visible,
+.intro-video-preview:focus-visible,
+.style-carousel .swiper-button-next:focus-visible,
+.style-carousel .swiper-button-prev:focus-visible,
+.style-carousel .swiper-pagination-bullet:focus-visible {
+  outline: 3px solid #16352f;
+  outline-offset: 3px;
+}
+
+button.elementor-menu-toggle {
+  appearance: none;
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+button.swiper-button-next,
+button.swiper-button-prev {
+  appearance: none;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+button.elementor-icon,
+.intro-video-preview {
+  appearance: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.intro-video-preview {
+  display: block;
+}
+
+.intro-video-preview img {
+  display: block;
+}
+
+.intro-video-error {
+  position: absolute;
+  inset: auto 0 0;
+  margin: 0;
+  padding: 0.5rem;
+  background: #fff;
+  color: #333;
+}
+
+.style-carousel .swiper-pagination-bullet {
+  display: inline-grid !important;
+  width: 44px !important;
+  height: 44px !important;
+  margin: 0 2px !important;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent !important;
+  opacity: 1 !important;
+  cursor: pointer;
+}
+
+.style-carousel .swiper-pagination-bullet::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #555;
+  content: "";
+}
+
+.style-carousel .swiper-pagination-bullet-active::before {
+  background: #16352f;
+}
+
+[data-import-track-0="active"] {
+  transform: translateX(var(--import-slide-offset)) !important;
+  transition-duration: 300ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage-skip-link {
+    transition: none;
+  }
+
+  [data-import-track-0="active"] {
+    transition-duration: 0ms !important;
+  }
+}
