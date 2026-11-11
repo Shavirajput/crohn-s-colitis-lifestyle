@@ -968,9 +968,35 @@ function Index() {
 }
 
 function ImportedHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuLeft, setMenuLeft] = useState(0);
+  const [stuck, setStuck] = useState(false);
+  const topBar = useRef<HTMLDivElement | null>(null);
+  const menuToggle = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    // Elementor sticky: the nav bar pins once the announcement bar has scrolled away (always pinned on phones, where that bar is hidden).
+    const update = () => setStuck(window.scrollY >= (topBar.current?.offsetHeight ?? 0));
+    const resize = () => { update(); if (window.innerWidth > 1024) setMenuOpen(false); };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", resize);
+    return () => { window.removeEventListener("scroll", update); window.removeEventListener("resize", resize); };
+  }, []);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") { setMenuOpen(false); menuToggle.current?.focus(); } };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+  const toggleMenu = () => {
+    const container = menuToggle.current?.parentElement;
+    if (container) setMenuLeft(-container.getBoundingClientRect().left);
+    setMenuOpen((open) => !open);
+  };
+  const stickyClass = stuck ? " elementor-sticky--active elementor-section--handles-inside" : "";
   return (
     <header className="elementor elementor-7 elementor-location-header" data-elementor-id="7">
-      <div className="elementor-element elementor-element-0ad0e82 elementor-hidden-mobile e-flex e-con-boxed e-con e-parent e-lazyloaded">
+      <div ref={topBar} className="elementor-element elementor-element-0ad0e82 elementor-hidden-mobile e-flex e-con-boxed e-con e-parent e-lazyloaded">
         <div className="e-con-inner">
           <div className="elementor-element elementor-element-c2b7872 elementor-view-default elementor-widget elementor-widget-icon">
             <div className="elementor-widget-container">
@@ -997,7 +1023,7 @@ function ImportedHeader() {
           </div>
         </div>
       </div>
-      <div className="elementor-element elementor-element-78703a5 e-flex e-con-boxed e-con e-parent elementor-sticky e-lazyloaded elementor-sticky--effects elementor-sticky--active elementor-section--handles-inside" data-site-import-scroll-header={"{\"desktop\":{\"added\":[\"elementor-sticky--active\",\"elementor-section--handles-inside\",\"elementor-sticky--effects\"],\"removed\":[],\"threshold\":648},\"mobile\":{\"added\":[\"elementor-sticky--active\",\"elementor-section--handles-inside\",\"elementor-sticky--effects\"],\"removed\":[],\"threshold\":633}}"} data-site-import-responsive="21">
+      <div className={"elementor-element elementor-element-78703a5 e-flex e-con-boxed e-con e-parent elementor-sticky e-lazyloaded elementor-sticky--effects" + stickyClass} style={stuck ? { position: "fixed", width: "100%", marginTop: 0, marginBottom: 0, top: 0 } : undefined} data-site-import-responsive="21">
         <div className="e-con-inner">
           <div className="elementor-element elementor-element-951d4e7 elementor-widget elementor-widget-image">
             <div className="elementor-widget-container">
@@ -1024,23 +1050,23 @@ function ImportedHeader() {
                   </li>
                 </ul>
               </nav>
-              <div className="elementor-menu-toggle" role="button" tabIndex={0} aria-label="Menu Toggle" aria-expanded="false">
+              <div ref={menuToggle} className={"elementor-menu-toggle" + (menuOpen ? " elementor-active" : "")} role="button" tabIndex={0} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} aria-controls="menu-2-a61003d" onClick={toggleMenu} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggleMenu(); } }}>
                 <i className="elementor-menu-toggle__icon--open eicon-menu-bar" aria-hidden="true" role="presentation" />
                 <i className="elementor-menu-toggle__icon--close eicon-close" aria-hidden="true" role="presentation" />
               </div>
-              <nav className="elementor-nav-menu--dropdown elementor-nav-menu__container" style={{ width: "1521px", left: "0px", top: "48.3906px", "--menu-height": "0" } as CSSProperties} aria-hidden="true" data-site-import-responsive="726">
+              <nav className="elementor-nav-menu--dropdown elementor-nav-menu__container" style={{ width: "100vw", left: `${menuLeft}px`, top: "33px", "--menu-height": menuOpen ? "100vh" : "0" } as CSSProperties} aria-hidden={!menuOpen} data-site-import-responsive="726">
                 <ul className="elementor-nav-menu" id="menu-2-a61003d">
                   <li className="menu-item">
-                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" tabIndex={-1} target="_blank">S.H.I.E.L.D. Program</a>
+                    <a className="elementor-item" href="https://shieldprogram.crohnscolitislifestyle.com/shieldprogram" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)} target="_blank">S.H.I.E.L.D. Program</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/about-us" tabIndex={-1}>Team</a>
+                    <a className="elementor-item" href="/about-us" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Team</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/testimonials" tabIndex={-1}>Testimonies</a>
+                    <a className="elementor-item" href="/testimonials" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Testimonies</a>
                   </li>
                   <li className="menu-item">
-                    <a className="elementor-item" href="/podcast" tabIndex={-1}>Podcast</a>
+                    <a className="elementor-item" href="/podcast" tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)}>Podcast</a>
                   </li>
                 </ul>
               </nav>
@@ -1068,7 +1094,7 @@ function ImportedHeader() {
           </div>
         </div>
       </div>
-      <div className="elementor-element elementor-element-78703a5 e-flex e-con-boxed e-con e-parent elementor-sticky e-lazyloaded elementor-sticky--effects elementor-sticky__spacer" style={{ visibility: "hidden", transition: "none", animation: "auto ease 0s 1 normal none running none" } as CSSProperties} data-site-import-scroll-header={"{\"desktop\":{\"added\":[\"elementor-sticky--active\",\"elementor-section--handles-inside\",\"elementor-sticky--effects\"],\"removed\":[],\"threshold\":648},\"mobile\":{\"added\":[\"elementor-sticky--active\",\"elementor-section--handles-inside\",\"elementor-sticky--effects\"],\"removed\":[],\"threshold\":633}}"}>
+      <div className="elementor-element elementor-element-78703a5 e-flex e-con-boxed e-con e-parent elementor-sticky e-lazyloaded elementor-sticky--effects elementor-sticky__spacer" style={{ visibility: "hidden", transition: "none", animation: "auto ease 0s 1 normal none running none", display: stuck ? undefined : "none" } as CSSProperties} aria-hidden="true">
         <div className="e-con-inner">
           <div className="elementor-element elementor-element-951d4e7 elementor-widget elementor-widget-image">
             <div className="elementor-widget-container">
